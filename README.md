@@ -56,6 +56,20 @@ python -m roomify.cli --help
 
 ---
 
+## Web app (Streamlit)
+
+The app is a 3-page Streamlit interface exposed via a Cloudflare quick tunnel from Colab:
+
+| Page | Purpose |
+|------|---------|
+| **Generate** | Spec form + strategy/seed/steps controls; Generate and Generate variant buttons; results stack side-by-side in session |
+| **Experiments** | Pick a sweep YAML, run it with a live progress bar, view metrics table + contact sheet |
+| **Gallery** | Browse all outputs; filter by scene type, strategy, or ControlNet use; click any image for full metadata |
+
+The pipeline is cached with `@st.cache_resource` and pre-warmed on startup so the first generation from the form is fast.
+
+---
+
 ## CLI reference
 
 ```bash

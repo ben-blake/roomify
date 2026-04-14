@@ -156,4 +156,23 @@ throughout the project as new tools are used.
 
 ---
 
+### 2026-04-14 — Phase 6 Streamlit Web App + Colab Tunnel
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Wrote `tests/testUiComponents.py` (19 tests) before implementation — TDD RED phase; tests pure-Python helpers only (no Streamlit runtime required)
+- Implemented pure-Python helpers in `src/roomify/ui/components.py`: `parseRunJson`, `listGalleryRuns` (recursive, with scene/strategy/controlled filters), `buildMetricsDf`, `formatSpec`
+- Implemented Streamlit components in `components.py` with lazy `import streamlit` (not available locally): `specForm`, `imageCard`, `metricsTable`, `controlPreview`
+- Implemented `src/roomify/ui/pageGenerate.py`: spec form, strategy/seed/steps/guidance controls, Generate + Generate variant buttons, variant stack in `st.session_state`, control signal preview
+- Implemented `src/roomify/ui/pageExperiments.py`: config YAML picker, live `st.progress` via background thread + `progressCb`, metrics table + contact sheet, past-sweep browser
+- Implemented `src/roomify/ui/pageGallery.py`: filters (scene/strategy/controlled), metrics expander, 3-column image grid
+- Updated `app.py`: Drive-backed `HF_HOME` setup, `@st.cache_resource` pre-warm (1-step 64×64 generation on startup)
+- Updated `docs/TASKS.md` to mark Phase 6 complete
+
+**Hand-written / not AI-generated (this session):**
+- None — Phase 6 is pure Python module implementation
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*
