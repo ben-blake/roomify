@@ -10,11 +10,16 @@ Usage:
 
 from __future__ import annotations
 
-import sys
+import dataclasses
+import json
+import subprocess
+import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
 import typer
+import yaml
 
 app = typer.Typer(
     name="roomify",
@@ -48,9 +53,70 @@ def generate(
     guidance: float = typer.Option(7.5, "--guidance", help="Classifier-free guidance scale."),
 ) -> None:
     """Generate a single interior design image from a room spec YAML."""
-    typer.echo(f"[roomify generate] spec={spec} strategy={strategy} control={control} seed={seed}")
-    typer.echo("Phase 3/4 implementation pending.")
-    raise typer.Exit(code=0)
+    from roomify.paths import getOutputDir
+    from roomify.pipeline import getPipeline
+    from roomify.promptBuilder import RoomSpec, buildPrompt
+
+    # Load spec YAML and construct RoomSpec
+    raw: dict = yaml.safe_load(spec.read_text())
+    valid_fields = set(RoomSpec.__dataclass_fields__.keys())
+    room_spec = RoomSpec(**{k: v for k, v in raw.items() if k in valid_fields})
+
+    # Build prompts
+    positive, negative = buildPrompt(room_spec, strategy)
+
+    # Prepare output directory  <runId = timestamp_specId>
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S")
+    run_id = f"{ts}_{room_spec.id}"
+    out_dir = getOutputDir() / run_id
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Load pipeline and generate
+    typer.echo(f"Loading pipeline (model: {strategy})...")
+    pipeline = getPipeline()
+    pipeline.load()
+
+    typer.echo(f"Generating image (seed={seed}, steps={steps}, guidance={guidance})...")
+    t0 = time.monotonic()
+    image = pipeline.generate(positive, negative, seed=seed, steps=steps, guidance=guidance)
+    elapsed = round(time.monotonic() - t0, 2)
+
+    # Write image
+    img_path = out_dir / "img_0.png"
+    image.save(str(img_path))
+
+    # Resolve git SHA (best-effort)
+    try:
+        git_sha = subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except Exception:
+        git_sha = "unknown"
+
+    # Write run.json
+    from roomify.pipeline import SD_MODEL_ID
+
+    run_json = {
+        "runId": run_id,
+        "spec": dataclasses.asdict(room_spec),
+        "strategy": strategy,
+        "controlled": control is not None,
+        "controlType": control,
+        "model": SD_MODEL_ID,
+        "seed": seed,
+        "steps": steps,
+        "guidanceScale": guidance,
+        "prompt": positive,
+        "negativePrompt": negative,
+        "imagePath": str(img_path),
+        "gitSha": git_sha,
+        "timings": {"generateSec": elapsed},
+    }
+    (out_dir / "run.json").write_text(json.dumps(run_json, indent=2))
+
+    typer.echo(f"Done → {out_dir}")
 
 
 @app.command()

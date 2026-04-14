@@ -104,4 +104,22 @@ throughout the project as new tools are used.
 
 ---
 
+---
+
+### 2026-04-14 — Phase 3 Baseline SD Pipeline
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Wrote `tests/testPipeline.py` (18 tests) before implementation — TDD RED phase
+- Implemented `src/roomify/pipeline.py`: `Pipeline.load()` (fp16, attention slicing, lazy imports), `Pipeline.generate()` (seeded generator, steps/guidance pass-through), `getPipeline()` singleton, `_resetPipeline()` for test isolation
+- Implemented `src/roomify/paths.py`: `getOutputDir()` / `getDataDir()` resolving Drive → Colab → local dev path
+- Wired up `src/roomify/cli.py` `generate` command: loads spec YAML → `buildPrompt` → `pipeline.generate` → writes `img_0.png` + `run.json` (all schema keys per ARCHITECTURE.md §4)
+- Updated `docs/TASKS.md` to mark Phase 3 complete
+
+**Hand-written / not AI-generated (this session):**
+- None — Phase 3 is pure Python module implementation
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*

@@ -115,8 +115,9 @@ app.py                       # Streamlit entrypoint (thin shell)
 src/roomify/
   dataset.py                 # SUN RGB-D manifest + Record schema
   promptBuilder.py           # RoomSpec + strategy → (positive, negative)
-  controlSignals.py          # depth / Canny extraction for ControlNet
   pipeline.py                # SD 1.5 + ControlNet wrapper, cached singleton
+  paths.py                   # Drive/Colab/local path resolution
+  controlSignals.py          # depth / Canny extraction for ControlNet
   orchestrator.py            # sweep runner, writes run.json per image
   evaluation.py              # CLIP alignment, LPIPS diversity, consistency
   reporting.py               # contact sheets, markdown metric tables

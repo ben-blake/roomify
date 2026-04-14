@@ -55,8 +55,9 @@ roomify/
 │   ├── __init__.py
 │   ├── dataset.py                 # SUN RGB-D loader + record schema
 │   ├── promptBuilder.py           # spec dict → (positive, negative)
-│   ├── controlSignals.py          # depth / canny extraction
 │   ├── pipeline.py                # SD + ControlNet wrapper (singleton-friendly)
+│   ├── paths.py                   # Drive/Colab/local path resolution
+│   ├── controlSignals.py          # depth / canny extraction
 │   ├── orchestrator.py            # runs the sweep matrix
 │   ├── evaluation.py              # CLIP, LPIPS, consistency metrics
 │   ├── reporting.py               # contact sheets, markdown tables
@@ -74,8 +75,9 @@ roomify/
 │   └── 03_evaluation.ipynb
 ├── outputs/                        # generated images + metadata (gitignored)
 ├── tests/
-│   ├── testPromptBuilder.py
 │   ├── testDataset.py
+│   ├── testPromptBuilder.py
+│   ├── testPipeline.py
 │   └── testEvaluation.py
 └── docs/
     ├── PRD.md
@@ -90,7 +92,8 @@ roomify/
 | `dataset.py` | Load SUN RGB-D subset, expose `Record(id, scene_type, rgb, depth, objects)` | `loadManifest()`, `getRecord(id)` |
 | `promptBuilder.py` | Map `RoomSpec` → `(positive: str, negative: str)` per strategy | `buildPrompt(spec, strategy)` |
 | `controlSignals.py` | Return conditioning image for ControlNet | `extractDepth(img)`, `extractCanny(img, lo, hi)` |
-| `pipeline.py` | Own the Diffusers pipeline; lazy-load; unload to save VRAM | `Pipeline.generate(prompt, negative, control=None, seed=...)` |
+| `pipeline.py` | Own the Diffusers pipeline; lazy-load; unload to save VRAM | `Pipeline.load()`, `Pipeline.generate(positive, negative, seed, steps, guidance)`, `getPipeline()` |
+| `paths.py` | Resolve output/data dirs across Drive, Colab, local dev | `getOutputDir()`, `getDataDir()` |
 | `orchestrator.py` | Run the sweep matrix, persist outputs + `run.json` metadata | `runExperiment(configPath)` |
 | `evaluation.py` | Compute metrics over an output directory | `clipAlignment()`, `lpipsDiversity()`, `styleConsistency()` |
 | `reporting.py` | Render contact sheets + markdown metric tables | `contactSheet(runDir)`, `metricsTable(runDir)` |
