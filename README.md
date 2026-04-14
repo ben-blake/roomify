@@ -59,8 +59,12 @@ python -m roomify.cli --help
 ## CLI reference
 
 ```bash
-# Generate one image from a room spec
+# Generate one image from a room spec (uncontrolled)
 python -m roomify.cli generate --spec configs/examples/bedroom_01.yaml
+
+# Depth-conditioned generation using a SUN RGB-D reference
+python -m roomify.cli generate --spec configs/examples/bedroom_01.yaml \
+  --control depth --ref-image sunrgbd_00142
 
 # Run a full experiment sweep
 python -m roomify.cli sweep --config configs/experiments/core.yaml

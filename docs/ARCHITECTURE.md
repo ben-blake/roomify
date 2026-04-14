@@ -78,6 +78,7 @@ roomify/
 │   ├── testDataset.py
 │   ├── testPromptBuilder.py
 │   ├── testPipeline.py
+│   ├── testControlSignals.py
 │   └── testEvaluation.py
 └── docs/
     ├── PRD.md
@@ -122,6 +123,7 @@ referenceImageId: sunrgbd_00142   # optional — enables ControlNet
   "strategy": "descriptive",
   "controlled": true,
   "controlType": "depth",
+  "refImageId": "sunrgbd_00142",
   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
   "controlnet": "lllyasviel/sd-controlnet-depth",
   "seed": 42,
@@ -130,6 +132,7 @@ referenceImageId: sunrgbd_00142   # optional — enables ControlNet
   "prompt": "...",
   "negativePrompt": "...",
   "imagePath": "outputs/.../img_0.png",
+  "gitSha": "e82fbe1",
   "timings": { "generateSec": 6.4 }
 }
 ```
