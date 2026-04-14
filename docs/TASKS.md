@@ -6,7 +6,7 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
 
 ## Phase 0 — Repo & Colab Bring-Up (2-3 h) ✅
 
-- [x] Initialize git repo (local `main` branch, initial commit `1b1e9c0`); push to GitHub public pending
+- [x] Initialize git repo (local `main` branch, initial commit `1b1e9c0`); pushed to GitHub public (`ben-blake/roomify`)
 - [x] Create `requirements.txt` with pinned versions (torch, diffusers, transformers, accelerate, controlnet-aux, opencv-python, open_clip_torch, lpips, pandas, matplotlib, typer, streamlit, pillow, pyngrok, pytest, jupyter) + `requirements-dev.txt` (no-GPU local subset)
 - [x] Scaffold module layout per `ARCHITECTURE.md` (§2) including `src/roomify/ui/`
 - [x] Add `README.md` with a prominent "Open in Colab" badge pointing at `notebooks/00_launchColab.ipynb`
@@ -20,7 +20,7 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
   - Cell 7: "reconnect" helper — remount Drive and restart the tunnel without redownloading weights
 - [x] Add AI-tools disclosure placeholder in `README.md` + `docs/AI_TOOLS.md`
 
-**Exit criterion:** `python -m roomify.cli --help` passes locally (4/4 smoke tests green). Full Colab end-to-end run pending GitHub push.
+**Exit criterion:** `python -m roomify.cli --help` passes locally (4/4 smoke tests green). Full Colab end-to-end verified: SD 1.5 smoke image generated, Streamlit + Cloudflare tunnel live.
 
 ---
 

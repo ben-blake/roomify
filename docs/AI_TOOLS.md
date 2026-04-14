@@ -37,4 +37,20 @@ throughout the project as new tools are used.
 
 ---
 
+### 2026-04-14 — Phase 0 Colab verification + dependency fixes
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Diagnosed and fixed series of Colab runtime dependency conflicts (diffusers `cached_download` removal, numpy ABI mismatch, matplotlib numpy<2 constraint)
+- Rewrote `requirements.txt` to only install packages absent from the Colab 2026.01 GPU runtime (sourced from `github.com/googlecolab/backend-info`)
+- Updated SD 1.5 model ID from `runwayml/stable-diffusion-v1-5` to `stable-diffusion-v1-5/stable-diffusion-v1-5`
+- Pushed repo to GitHub (`ben-blake/roomify`), replaced placeholder URLs
+
+**Hand-written / not AI-generated (this session):**
+- Colab execution and verification (running cells, observing outputs)
+- HF token creation and model license acceptance
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*
