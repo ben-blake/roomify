@@ -1,0 +1,44 @@
+# ── Core deep-learning stack ───────────────────────────────────────────────
+# torch is already present in Colab; pin minimum to avoid accidental downgrade.
+torch>=2.1.0
+torchvision>=0.16.0
+
+# ── Diffusion / generation ─────────────────────────────────────────────────
+diffusers==0.26.3
+transformers==4.37.2
+accelerate==0.26.1
+controlnet-aux==0.0.7
+# Hugging Face hub (transitive, but pin for cache stability)
+huggingface-hub>=0.20.3
+
+# ── Computer vision ────────────────────────────────────────────────────────
+opencv-python==4.9.0.80
+Pillow==10.2.0
+
+# ── Evaluation metrics ─────────────────────────────────────────────────────
+open_clip_torch==2.24.0
+lpips==0.1.4
+
+# ── Data / analysis ────────────────────────────────────────────────────────
+pandas==2.2.0
+matplotlib==3.8.2
+
+# ── Web app ────────────────────────────────────────────────────────────────
+streamlit==1.31.0
+
+# ── Tunnel (fallback; primary is cloudflared binary) ───────────────────────
+pyngrok==7.0.5
+
+# ── CLI ────────────────────────────────────────────────────────────────────
+typer==0.9.0
+
+# ── Config parsing ─────────────────────────────────────────────────────────
+PyYAML>=6.0.1
+
+# ── Testing ────────────────────────────────────────────────────────────────
+pytest==7.4.4
+pytest-cov==4.1.0
+
+# ── Notebooks ──────────────────────────────────────────────────────────────
+jupyter==1.0.0
+ipywidgets>=8.0.0

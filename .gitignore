@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+.eggs/
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Model weights and checkpoints
+*.ckpt
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# Project data (lives on Google Drive in Colab)
+data/sunrgbd_subset/
+data/*.csv
+
+# Generated outputs (lives on Google Drive in Colab)
+outputs/
+
+# HF cache (managed separately on Drive)
+hf_cache/
+
+# Secrets / env
+.env
+.env.local
+secrets.yaml
+
+# macOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+# pytest cache
+.pytest_cache/
+.coverage
+htmlcov/

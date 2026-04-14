@@ -1,0 +1,13 @@
+# Example RoomSpec — used by Phase 3 smoke test and CLI examples.
+id: bedroom_01
+roomType: bedroom
+size: "10x12 ft"
+style: scandinavian
+furniture:
+  - queen bed
+  - nightstand
+  - reading chair
+lighting: "natural light from east window"
+mood: "cozy, airy"
+# Uncomment to enable ControlNet conditioning (requires a matching SUN RGB-D id)
+# referenceImageId: sunrgbd_00142

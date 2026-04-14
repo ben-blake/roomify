@@ -1,0 +1,35 @@
+# Prompt strategy templates for Roomify.
+# Phase 2 implements buildPrompt() which renders these with RoomSpec values.
+#
+# Template variables (all optional where marked):
+#   {roomType}    — e.g. bedroom, living_room, kitchen, office, bathroom
+#   {style}       — e.g. scandinavian, minimalist, industrial, mid_century, boho
+#   {size}        — e.g. "10x12 ft"
+#   {furniture}   — comma-joined list, e.g. "queen bed, nightstand, reading chair"
+#   {lighting}    — e.g. "natural light from east window"
+#   {mood}        — e.g. "cozy, airy"
+
+strategies:
+  minimal:
+    positive: "{roomType}, {style} style"
+
+  descriptive:
+    positive: >-
+      A {style} {roomType}, {size}, featuring {furniture},
+      {lighting}, {mood},
+      interior design photography, 4k
+
+  styleAnchored:
+    positive: >-
+      A {style} {roomType}, {size}, featuring {furniture},
+      {lighting}, {mood},
+      interior design photography, 4k,
+      inspired by IKEA catalog photography,
+      muted palette, natural materials,
+      high-end architectural digest editorial
+
+# Shared negative prompt applied to every strategy.
+negative: >-
+  low quality, blurry, distorted proportions, extra furniture,
+  cluttered, warped walls, text, watermark, people, cartoon,
+  oversaturated, fisheye, bad anatomy
