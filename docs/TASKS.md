@@ -7,7 +7,7 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
 ## Phase 0 — Repo & Colab Bring-Up (2-3 h) ✅
 
 - [x] Initialize git repo (local `main` branch, initial commit `1b1e9c0`); pushed to GitHub public (`ben-blake/roomify`)
-- [x] Create `requirements.txt` with pinned versions (torch, diffusers, transformers, accelerate, controlnet-aux, opencv-python, open_clip_torch, lpips, pandas, matplotlib, typer, streamlit, pillow, pyngrok, pytest, jupyter) + `requirements-dev.txt` (no-GPU local subset)
+- [x] Create `requirements.txt` scoped to packages absent from the Colab 2026.01 GPU runtime (controlnet-aux, open_clip_torch, lpips, streamlit, pyngrok, pytest) + `requirements-dev.txt` (local no-GPU subset); Colab pre-installs torch, diffusers, transformers, numpy, pandas, matplotlib, etc.
 - [x] Scaffold module layout per `ARCHITECTURE.md` (§2) including `src/roomify/ui/`
 - [x] Add `README.md` with a prominent "Open in Colab" badge pointing at `notebooks/00_launchColab.ipynb`
 - [x] Author `notebooks/00_launchColab.ipynb` skeleton with labelled cells:
