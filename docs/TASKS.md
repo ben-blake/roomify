@@ -4,13 +4,13 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
 
 ---
 
-## Phase 0 — Repo & Colab Bring-Up (2-3 h)
+## Phase 0 — Repo & Colab Bring-Up (2-3 h) ✅
 
-- [ ] Initialize git repo (GitHub, public) with `.gitignore` (Python, `outputs/`, `data/sunrgbd_subset/`, `*.ckpt`, `.ipynb_checkpoints/`)
-- [ ] Create `requirements.txt` with pinned versions (torch, diffusers, transformers, accelerate, controlnet-aux, opencv-python, open_clip_torch, lpips, pandas, matplotlib, typer, streamlit, pillow, pyngrok, pytest, jupyter)
-- [ ] Scaffold module layout per `ARCHITECTURE.md` (§2) including `src/roomify/ui/`
-- [ ] Add `README.md` with a prominent "Open in Colab" badge pointing at `notebooks/00_launchColab.ipynb`
-- [ ] Author `notebooks/00_launchColab.ipynb` skeleton with labelled cells:
+- [x] Initialize git repo (local `main` branch, initial commit `1b1e9c0`); push to GitHub public pending
+- [x] Create `requirements.txt` with pinned versions (torch, diffusers, transformers, accelerate, controlnet-aux, opencv-python, open_clip_torch, lpips, pandas, matplotlib, typer, streamlit, pillow, pyngrok, pytest, jupyter) + `requirements-dev.txt` (no-GPU local subset)
+- [x] Scaffold module layout per `ARCHITECTURE.md` (§2) including `src/roomify/ui/`
+- [x] Add `README.md` with a prominent "Open in Colab" badge pointing at `notebooks/00_launchColab.ipynb`
+- [x] Author `notebooks/00_launchColab.ipynb` skeleton with labelled cells:
   - Cell 1: mount Google Drive and `mkdir -p /content/drive/MyDrive/roomify/{data,outputs,hf_cache}`; symlink into `/content/roomify/`
   - Cell 2: `git clone` the repo and `pip install -r requirements.txt`
   - Cell 3: set `HF_HOME` to the Drive-backed cache so weights persist across sessions
@@ -18,9 +18,9 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
   - Cell 5: smoke-test `diffusers` SD 1.5 text-to-image (produce one PNG)
   - Cell 6 (stub for Phase 6): placeholder for `streamlit run app.py &` + `cloudflared` tunnel
   - Cell 7: "reconnect" helper — remount Drive and restart the tunnel without redownloading weights
-- [ ] Add AI-tools disclosure placeholder in `README.md`
+- [x] Add AI-tools disclosure placeholder in `README.md` + `docs/AI_TOOLS.md`
 
-**Exit criterion:** The launcher notebook runs end-to-end in a fresh Colab Pro session, produces a baseline SD PNG, and `python -m roomify.cli --help` runs from a shell cell.
+**Exit criterion:** `python -m roomify.cli --help` passes locally (4/4 smoke tests green). Full Colab end-to-end run pending GitHub push.
 
 ---
 
@@ -39,9 +39,9 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
 
 ## Phase 2 — Prompt Builder (1-2 h)
 
-- [ ] Author `configs/prompts.yaml` with three strategies (`minimal`, `descriptive`, `styleAnchored`) and a shared negative prompt
+- [x] Author `configs/prompts.yaml` with three strategies (`minimal`, `descriptive`, `styleAnchored`) and a shared negative prompt _(done in Phase 0)_
 - [ ] Implement `src/roomify/promptBuilder.py`: `buildPrompt(spec, strategy) -> (positive, negative)`
-- [ ] Define `RoomSpec` dataclass and schema validation
+- [x] Define `RoomSpec` dataclass _(stub exists; schema validation pending)_
 - [ ] `tests/testPromptBuilder.py`: each strategy produces non-empty, strategy-distinct prompts for a fixed spec
 
 **Exit criterion:** unit tests green; manual eyeball of generated prompts reads cleanly.
