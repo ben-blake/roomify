@@ -18,16 +18,20 @@ Three prompt strategies — `minimal`, `descriptive`, `styleAnchored` — are co
 
 1. Click the **Open in Colab** badge above.
 2. Run all cells in `notebooks/00_launchColab.ipynb` top to bottom.
+   - Enable widget cell enables third-party widget support.
    - Cell 1 mounts your Google Drive and creates the folder structure.
    - Cell 2 clones this repo and installs dependencies (~3 min on first run).
+   - Cell 2b **(first run only)** unzips SUN RGB-D and builds the 200-sample subset.
    - Cell 3 sets `HF_HOME` so model weights persist across Colab sessions.
    - Cell 4 verifies your GPU with `nvidia-smi`.
-   - Cell 5 runs a smoke-test generation (SD 1.5 text-to-image).
+   - Cell 5 loads SD 1.5 and runs a smoke-test generation (skips if already done).
    - Cell 6 starts the Streamlit web app and opens a Cloudflare tunnel.
    - Cell 7 is a reconnect helper for after a Colab disconnect.
 3. Click the `trycloudflare.com` URL printed by Cell 6 to open the web app.
 
 **First-run time budget:** ~5–8 min (model download + warmup). Subsequent sessions re-use the Drive-cached weights and start in < 1 min.
+
+> **Note:** Each notebook in this repo has its own self-contained setup cell — Colab runtimes are isolated per notebook tab.
 
 ---
 

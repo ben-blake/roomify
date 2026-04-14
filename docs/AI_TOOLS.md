@@ -71,4 +71,22 @@ throughout the project as new tools are used.
 
 ---
 
+### 2026-04-14 — Phase 1 completion + notebook fixes
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Diagnosed and fixed series of Colab notebook issues: port 8501 conflict, cloudflared pipe-buffer deadlock, isolated runtime `ModuleNotFoundError`, FUSE persistence (subset files lost after session end)
+- Fixed `notebooks/00_launchColab.ipynb`: Cell 6 now kills stale processes, redirects cloudflared output to file, verifies Streamlit started before launching tunnel
+- Fixed `notebooks/01_explore_sunrgbd.ipynb`: added self-contained setup cell (Drive mount, clone, data symlink) so it runs independently in its own Colab runtime
+- Added widget manager cells to launcher notebook
+- Moved Phase 1 EDA outputs to `examples/phase1/`
+- Updated README, CLAUDE.md, docs/AI_TOOLS.md to reflect Phase 1 completion and new Colab gotchas
+
+**Hand-written / not AI-generated (this session):**
+- Running all cells in Colab and verifying outputs
+- Downloading EDA PNGs from Colab and adding to repo
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*
