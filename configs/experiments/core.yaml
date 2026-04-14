@@ -1,0 +1,71 @@
+# Core experiment sweep for Roomify — Phase 5.
+#
+# Matrix: 5 specs × 3 strategies × 2 (controlled/uncontrolled) × 3 seeds = 90 images
+#
+# All images are uncontrolled here (no SUN RGB-D ref) so the sweep can run
+# without Drive data.  Use a separate controlled sweep config (with
+# referenceImageId populated) to add ControlNet conditioning.
+#
+# Fields
+# ------
+# runId       : prefix used to name the output directory
+# specs       : list of RoomSpec dicts (same schema as RoomSpec YAML files)
+# strategies  : list of strategy names to cross-product
+# controlled  : list of booleans; true requires a referenceImageId on each spec
+# seeds       : list of integer seeds to cross-product
+
+runId: core
+
+specs:
+  - id: bedroom_01
+    roomType: bedroom
+    size: "10x12 ft"
+    style: scandinavian
+    furniture: [queen bed, nightstand, reading chair]
+    lighting: "natural light from east window"
+    mood: "cozy, airy"
+
+  - id: living_room_01
+    roomType: living_room
+    size: "14x16 ft"
+    style: mid_century
+    furniture: [sofa, armchairs, coffee table, bookshelf]
+    lighting: "floor lamp and recessed ceiling lights"
+    mood: "warm, inviting"
+
+  - id: kitchen_01
+    roomType: kitchen
+    size: "10x12 ft"
+    style: industrial
+    furniture: [island, barstools, open shelving, range hood]
+    lighting: "pendant lights over island"
+    mood: "clean, functional"
+
+  - id: office_01
+    roomType: office
+    size: "10x10 ft"
+    style: minimalist
+    furniture: [standing desk, ergonomic chair, monitor, bookshelf]
+    lighting: "task lamp and natural window light"
+    mood: "focused, calm"
+
+  - id: bathroom_01
+    roomType: bathroom
+    size: "6x8 ft"
+    style: boho
+    furniture: [freestanding tub, vanity, woven baskets, plants]
+    lighting: "soft sconce lighting"
+    mood: "relaxing, organic"
+
+strategies:
+  - minimal
+  - descriptive
+  - styleAnchored
+
+controlled:
+  - false
+
+seeds:
+  - 42
+  - 123
+  - 7

@@ -140,4 +140,20 @@ throughout the project as new tools are used.
 
 ---
 
+### 2026-04-14 — Phase 5 Experiment Orchestrator
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Wrote `tests/testOrchestrator.py` (18 tests) before implementation — TDD RED phase; patched `getPipeline()` directly to avoid sys.modules diffusers mock pollution with testPipeline.py
+- Authored `configs/experiments/core.yaml` — 5 specs × 3 strategies × 1 controlled flag × 3 seeds
+- Implemented `src/roomify/orchestrator.py::runExperiment(configPath, progressCb=None)` — iterates sweep matrix, writes per-cell subdirectory with `img_0.png` + `run.json`, calls `progressCb(done, total)` after each image
+- Wired `roomify sweep` CLI command (replaced "Phase 5 implementation pending" stub in `cli.py`)
+- Updated `docs/TASKS.md` to mark Phase 5 complete
+
+**Hand-written / not AI-generated (this session):**
+- None — Phase 5 is pure Python module implementation
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*

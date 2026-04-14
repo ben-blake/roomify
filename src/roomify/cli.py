@@ -167,9 +167,20 @@ def sweep(
     ),
 ) -> None:
     """Run a full experiment sweep defined in an experiment YAML."""
+    from roomify.orchestrator import runExperiment
+
     typer.echo(f"[roomify sweep] config={config}")
-    typer.echo("Phase 5 implementation pending.")
-    raise typer.Exit(code=0)
+
+    total_shown: list = []
+
+    def progress(done: int, total: int) -> None:
+        if not total_shown:
+            total_shown.append(total)
+            typer.echo(f"Running {total} images...")
+        typer.echo(f"  [{done}/{total}] done")
+
+    out_dir = runExperiment(config, progressCb=progress)
+    typer.echo(f"Done → {out_dir}")
 
 
 @app.command()
