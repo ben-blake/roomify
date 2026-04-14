@@ -119,7 +119,7 @@ referenceImageId: sunrgbd_00142   # optional — enables ControlNet
   "strategy": "descriptive",
   "controlled": true,
   "controlType": "depth",
-  "model": "runwayml/stable-diffusion-v1-5",
+  "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
   "controlnet": "lllyasviel/sd-controlnet-depth",
   "seed": 42,
   "steps": 30,

@@ -15,7 +15,7 @@ from PIL import Image
 
 _PIPELINE_INSTANCE: Optional["Pipeline"] = None
 
-SD_MODEL_ID = "runwayml/stable-diffusion-v1-5"
+SD_MODEL_ID = "stable-diffusion-v1-5/stable-diffusion-v1-5"
 CONTROLNET_DEPTH_ID = "lllyasviel/sd-controlnet-depth"
 CONTROLNET_CANNY_ID = "lllyasviel/sd-controlnet-canny"
 
