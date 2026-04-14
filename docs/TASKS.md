@@ -24,16 +24,16 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
 
 ---
 
-## Phase 1 — Data Pipeline (2-3 h)
+## Phase 1 — Data Pipeline (2-3 h) ✅
 
-- [ ] Download SUN RGB-D **into Google Drive** (document the exact URL in README); the launcher notebook reads from Drive so this is a one-time cost per Drive
-- [ ] Write `scripts/buildSubset.py` to curate ~200 samples across 5 scene types (bedroom, living_room, kitchen, office, bathroom) — even distribution; output lives at `/content/drive/MyDrive/roomify/data/sunrgbd_subset/`
-- [ ] Emit `data/manifest.csv` (on Drive) with columns `id, sceneType, rgbPath, depthPath, objectLabels`
-- [ ] Implement `src/roomify/dataset.py`: `loadManifest()`, `getRecord(id)`, `listByScene(sceneType)`
-- [ ] `tests/testDataset.py`: manifest loads, depth file exists for each record, scene types valid
-- [ ] `notebooks/01_explore_sunrgbd.ipynb`: sanity-check visualizations (RGB + depth pairs)
+- [x] Download SUN RGB-D **into Google Drive** — URL documented in README (https://rgbd.cs.princeton.edu/)
+- [x] Write `scripts/buildSubset.py` to curate ~200 samples across 5 scene types (bedroom, living_room, kitchen, office, bathroom) — even distribution; output lives at `/content/drive/MyDrive/roomify/data/sunrgbd_subset/`
+- [x] Emit `data/manifest.csv` (on Drive) with columns `id, sceneType, rgbPath, depthPath, objectLabels`
+- [x] Implement `src/roomify/dataset.py`: `loadManifest()`, `getRecord(id)`, `listByScene(sceneType)`
+- [x] `tests/testDataset.py`: 17 tests, 100% coverage — manifest loads, record fields correct, labels parsed, scene types validated, errors raised correctly
+- [x] `notebooks/01_explore_sunrgbd.ipynb`: sanity-check visualizations (RGB + depth pairs, contact sheet, label frequency chart)
 
-**Exit criterion:** `pytest tests/testDataset.py` passes and notebook renders RGB+depth pairs.
+**Exit criterion:** `pytest tests/testDataset.py` passes (17/17) and notebook renders RGB+depth pairs. _Local tests green; notebook runs end-to-end in Colab once Drive data is present._
 
 ---
 

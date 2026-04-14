@@ -74,12 +74,24 @@ python -m roomify.cli report --run outputs/<runId>
 
 **SUN RGB-D** — a large-scale dataset of indoor RGB-D images with scene labels and object annotations.
 
-- Full dataset: ~10,000 images, ~20 GB (not committed; too large for GitHub)
+- **Download URL:** https://rgbd.cs.princeton.edu/ — click "SUNRGBD V1" to get the full ~2.6 GB zip
+- Full dataset: ~10,000 images (not committed; too large for GitHub)
 - Curated subset: ~200 images across 5 scene types (bedroom, living_room, kitchen, office, bathroom), even distribution
-- Location in Colab: `/content/drive/MyDrive/roomify/data/sunrgbd_subset/`
-- Manifest: `data/manifest.csv` (also on Drive; not committed)
+- Location in Colab: `/content/drive/MyDrive/roomify/data/SUNRGBD` (raw) and `/content/drive/MyDrive/roomify/data/sunrgbd_subset` (curated)
+- Manifest: `data/sunrgbd_subset/manifest.csv` (on Drive; not committed)
 
-The subset is built once by `scripts/buildSubset.py` and cached to Google Drive. Subsequent Colab sessions load directly from Drive.
+**One-time setup** (run once per Google Drive account):
+
+```bash
+# In Colab, after mounting Drive:
+python scripts/buildSubset.py \
+    --sunrgbd-root /content/drive/MyDrive/roomify/data/SUNRGBD \
+    --output-dir   /content/drive/MyDrive/roomify/data/sunrgbd_subset \
+    --samples-per-scene 40 \
+    --copy
+```
+
+The subset is cached to Google Drive. Subsequent Colab sessions load directly from Drive — no re-download needed.
 
 ---
 

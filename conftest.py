@@ -1,0 +1,6 @@
+"""Root conftest.py — adds src/ to sys.path for all test files."""
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))

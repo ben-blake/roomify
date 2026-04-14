@@ -53,4 +53,22 @@ throughout the project as new tools are used.
 
 ---
 
+### 2026-04-14 — Phase 1 Data Pipeline
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Wrote `tests/testDataset.py` (17 tests, 100% coverage on `dataset.py`)
+- Wrote `scripts/buildSubset.py` — curates ~200 samples from SUN RGB-D across 5 scene types, emits `manifest.csv`
+- Wrote `notebooks/01_explore_sunrgbd.ipynb` — RGB+depth pair grid, contact sheet, label frequency chart
+- Added `pytest.ini` and `conftest.py` so `pytest` works from repo root
+- Updated README Dataset section with SUN RGB-D download URL and one-time setup command
+- Updated `docs/TASKS.md` to mark Phase 1 complete
+
+**Hand-written / not AI-generated (this session):**
+- Dataset download (done manually in Google Drive)
+- Colab notebook execution and verification
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*
