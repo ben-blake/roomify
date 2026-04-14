@@ -122,4 +122,22 @@ throughout the project as new tools are used.
 
 ---
 
+---
+
+### 2026-04-14 — Phase 4 ControlNet Integration
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Wrote `tests/testControlSignals.py` (10 tests) before implementation — TDD RED phase; mocked cv2 at module level (not in dev deps)
+- Extended `tests/testPipeline.py` with 10 new ControlNet tests — TDD RED phase
+- Implemented `src/roomify/controlSignals.py`: `extractDepth()` (grayscale normalization + RGB luminance proxy), `extractCanny()` (cv2.cvtColor + cv2.Canny)
+- Extended `src/roomify/pipeline.py`: ControlNet load path branching on `controlType`, `generate()` passes `image=control` kwarg when control is provided
+- Updated `src/roomify/cli.py`: `--ref-image <id>` flag, normalizes `"none"` → `None`, lazy-loads record + extracts control signal, passes `controlType` to `load()`, adds `controlnet` and `refImageId` keys to `run.json`
+
+**Hand-written / not AI-generated (this session):**
+- None — Phase 4 is pure Python module implementation
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*

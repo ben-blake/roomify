@@ -29,14 +29,26 @@ _torch_mock.cuda.is_available.return_value = False
 _torch_mock.Generator.return_value = _mock_generator
 
 _mock_sd_class = MagicMock()
+_mock_cn_model_class = MagicMock()
+_mock_cn_sd_class = MagicMock()
+
 _diffusers_mock = MagicMock()
 _diffusers_mock.StableDiffusionPipeline = _mock_sd_class
+_diffusers_mock.ControlNetModel = _mock_cn_model_class
+_diffusers_mock.StableDiffusionControlNetPipeline = _mock_cn_sd_class
 
 sys.modules.setdefault("torch", _torch_mock)
 sys.modules.setdefault("diffusers", _diffusers_mock)
 
 # Now safe to import
-from roomify.pipeline import Pipeline, getPipeline, _resetPipeline, SD_MODEL_ID  # noqa: E402
+from roomify.pipeline import (  # noqa: E402
+    CONTROLNET_CANNY_ID,
+    CONTROLNET_DEPTH_ID,
+    Pipeline,
+    _resetPipeline,
+    getPipeline,
+    SD_MODEL_ID,
+)
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -64,6 +76,8 @@ def resetState():
     """Reset singleton and mocks before each test."""
     _resetPipeline()
     _mock_sd_class.reset_mock()
+    _mock_cn_model_class.reset_mock()
+    _mock_cn_sd_class.reset_mock()
     _torch_mock.reset_mock()
     _torch_mock.float16 = "float16"
     _torch_mock.cuda.is_available.return_value = False
@@ -292,3 +306,134 @@ def test_cli_generate_run_json_contains_prompts(tmp_path):
     assert data["prompt"].strip()
     assert data["negativePrompt"].strip()
     assert data["strategy"] == "descriptive"
+
+
+# ---------------------------------------------------------------------------
+# Phase 4 — ControlNet pipeline tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def loadedControlNetPipeline() -> Pipeline:
+    """Return a Pipeline loaded with controlType='depth' (ControlNet mocked)."""
+    mock_cn_pipe = _makeMockPipeInstance()
+    _mock_cn_model_class.from_pretrained.return_value = MagicMock()
+    _mock_cn_sd_class.from_pretrained.return_value = mock_cn_pipe
+    p = Pipeline()
+    p.load(controlType="depth")
+    return p
+
+
+def test_load_depth_uses_controlnet_pipeline():
+    _mock_cn_model_class.from_pretrained.return_value = MagicMock()
+    _mock_cn_sd_class.from_pretrained.return_value = _makeMockPipeInstance()
+    p = Pipeline()
+    p.load(controlType="depth")
+    _mock_cn_sd_class.from_pretrained.assert_called_once()
+    _mock_sd_class.from_pretrained.assert_not_called()
+
+
+def test_load_canny_uses_controlnet_pipeline():
+    _mock_cn_model_class.from_pretrained.return_value = MagicMock()
+    _mock_cn_sd_class.from_pretrained.return_value = _makeMockPipeInstance()
+    p = Pipeline()
+    p.load(controlType="canny")
+    _mock_cn_sd_class.from_pretrained.assert_called_once()
+    _mock_sd_class.from_pretrained.assert_not_called()
+
+
+def test_load_depth_uses_correct_controlnet_id():
+    _mock_cn_model_class.from_pretrained.return_value = MagicMock()
+    _mock_cn_sd_class.from_pretrained.return_value = _makeMockPipeInstance()
+    p = Pipeline()
+    p.load(controlType="depth")
+    args = _mock_cn_model_class.from_pretrained.call_args[0]
+    assert args[0] == CONTROLNET_DEPTH_ID
+
+
+def test_load_canny_uses_correct_controlnet_id():
+    _mock_cn_model_class.from_pretrained.return_value = MagicMock()
+    _mock_cn_sd_class.from_pretrained.return_value = _makeMockPipeInstance()
+    p = Pipeline()
+    p.load(controlType="canny")
+    args = _mock_cn_model_class.from_pretrained.call_args[0]
+    assert args[0] == CONTROLNET_CANNY_ID
+
+
+def test_load_none_still_uses_plain_sd_pipeline():
+    _mock_sd_class.from_pretrained.return_value = _makeMockPipeInstance()
+    p = Pipeline()
+    p.load(controlType=None)
+    _mock_sd_class.from_pretrained.assert_called_once()
+    _mock_cn_sd_class.from_pretrained.assert_not_called()
+
+
+def test_generate_passes_control_image_to_pipeline(loadedControlNetPipeline):
+    control_img = PILImage.new("RGB", (64, 64))
+    loadedControlNetPipeline.generate("positive", "negative", control=control_img)
+    kwargs = loadedControlNetPipeline._sd.call_args[1]
+    assert "image" in kwargs
+    assert kwargs["image"] is control_img
+
+
+def test_generate_without_control_does_not_pass_image(loadedPipeline):
+    loadedPipeline.generate("positive", "negative", control=None)
+    kwargs = loadedPipeline._sd.call_args[1]
+    assert "image" not in kwargs
+
+
+# ---------------------------------------------------------------------------
+# Phase 4 — CLI ControlNet flag tests
+# ---------------------------------------------------------------------------
+
+
+def test_cli_generate_control_depth_exits_zero(tmp_path):
+    from typer.testing import CliRunner
+    from roomify.cli import app
+
+    runner = CliRunner()
+    mock_pl = _makeMockPipelineForCli()
+
+    with patch("roomify.pipeline.getPipeline", return_value=mock_pl), \
+         patch("roomify.paths.getOutputDir", return_value=tmp_path):
+        result = runner.invoke(app, [
+            "generate", "--spec", _SPEC_YAML, "--control", "depth",
+        ])
+
+    assert result.exit_code == 0, result.output
+
+
+def test_cli_generate_control_depth_sets_run_json(tmp_path):
+    from typer.testing import CliRunner
+    from roomify.cli import app
+
+    runner = CliRunner()
+    mock_pl = _makeMockPipelineForCli()
+
+    with patch("roomify.pipeline.getPipeline", return_value=mock_pl), \
+         patch("roomify.paths.getOutputDir", return_value=tmp_path):
+        runner.invoke(app, [
+            "generate", "--spec", _SPEC_YAML, "--control", "depth",
+        ])
+
+    data = json.loads((next(tmp_path.iterdir()) / "run.json").read_text())
+    assert data["controlled"] is True
+    assert data["controlType"] == "depth"
+
+
+def test_cli_generate_control_none_is_uncontrolled(tmp_path):
+    from typer.testing import CliRunner
+    from roomify.cli import app
+
+    runner = CliRunner()
+    mock_pl = _makeMockPipelineForCli()
+
+    with patch("roomify.pipeline.getPipeline", return_value=mock_pl), \
+         patch("roomify.paths.getOutputDir", return_value=tmp_path):
+        runner.invoke(app, [
+            "generate", "--spec", _SPEC_YAML, "--control", "none",
+        ])
+
+    data = json.loads((next(tmp_path.iterdir()) / "run.json").read_text())
+    assert data["controlled"] is False
+    assert data["controlType"] is None

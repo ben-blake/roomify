@@ -30,20 +30,46 @@ class Pipeline:
     def __init__(self) -> None:
         self._sd = None
         self._loaded = False
+        self._controlType: Optional[str] = None
 
     def load(self, controlType: Optional[str] = None) -> None:
         """Load SD 1.5 weights with fp16 and attention slicing.
 
-        controlType: 'depth' | 'canny' | None  (ControlNet added in Phase 4)
+        controlType: 'depth' | 'canny' | None
+          - 'depth' / 'canny' → loads StableDiffusionControlNetPipeline with the
+            corresponding ControlNet checkpoint.
+          - None → loads plain StableDiffusionPipeline.
         """
         import torch  # type: ignore[import-not-found]
-        from diffusers import StableDiffusionPipeline  # type: ignore[import-not-found]
 
-        pipe = StableDiffusionPipeline.from_pretrained(
-            SD_MODEL_ID,
-            torch_dtype=torch.float16,
-            safety_checker=None,
-        )
+        if controlType in ("depth", "canny"):
+            from diffusers import (  # type: ignore[import-not-found]
+                ControlNetModel,
+                StableDiffusionControlNetPipeline,
+            )
+
+            controlnet_id = (
+                CONTROLNET_DEPTH_ID if controlType == "depth" else CONTROLNET_CANNY_ID
+            )
+            controlnet = ControlNetModel.from_pretrained(
+                controlnet_id,
+                torch_dtype=torch.float16,
+            )
+            pipe = StableDiffusionControlNetPipeline.from_pretrained(
+                SD_MODEL_ID,
+                controlnet=controlnet,
+                torch_dtype=torch.float16,
+                safety_checker=None,
+            )
+        else:
+            from diffusers import StableDiffusionPipeline  # type: ignore[import-not-found]
+
+            pipe = StableDiffusionPipeline.from_pretrained(
+                SD_MODEL_ID,
+                torch_dtype=torch.float16,
+                safety_checker=None,
+            )
+
         pipe.enable_attention_slicing()
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -51,6 +77,7 @@ class Pipeline:
 
         self._sd = pipe
         self._loaded = True
+        self._controlType = controlType
 
     def generate(
         self,
@@ -75,14 +102,16 @@ class Pipeline:
 
         generator = torch.Generator().manual_seed(seed)
 
-        result = self._sd(
-            positive,
+        kwargs: dict = dict(
             negative_prompt=negative,
             num_inference_steps=steps,
             guidance_scale=guidance,
             generator=generator,
         )
+        if control is not None:
+            kwargs["image"] = control
 
+        result = self._sd(positive, **kwargs)
         return result.images[0]
 
 

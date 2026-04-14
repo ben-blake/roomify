@@ -48,6 +48,11 @@ def generate(
         "--control",
         help="ControlNet signal: depth | canny | none",
     ),
+    ref_image: Optional[str] = typer.Option(
+        None,
+        "--ref-image",
+        help="SUN RGB-D record ID to use as ControlNet conditioning source.",
+    ),
     seed: int = typer.Option(42, "--seed", help="RNG seed for reproducibility."),
     steps: int = typer.Option(30, "--steps", help="Number of diffusion steps."),
     guidance: float = typer.Option(7.5, "--guidance", help="Classifier-free guidance scale."),
@@ -65,6 +70,23 @@ def generate(
     # Build prompts
     positive, negative = buildPrompt(room_spec, strategy)
 
+    # Normalize control type: "none" string → None
+    control_type = control if control in ("depth", "canny") else None
+
+    # Extract control conditioning image from SUN RGB-D record if provided
+    control_image = None
+    if control_type and ref_image:
+        from PIL import Image as PILImage
+        from roomify.controlSignals import extractCanny, extractDepth
+        from roomify.dataset import getRecord
+        record = getRecord(ref_image)
+        if control_type == "depth":
+            ref_pil = PILImage.open(record.depthPath)
+            control_image = extractDepth(ref_pil)
+        else:
+            ref_pil = PILImage.open(record.rgbPath)
+            control_image = extractCanny(ref_pil)
+
     # Prepare output directory  <runId = timestamp_specId>
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S")
     run_id = f"{ts}_{room_spec.id}"
@@ -72,13 +94,17 @@ def generate(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Load pipeline and generate
-    typer.echo(f"Loading pipeline (model: {strategy})...")
+    ctrl_label = control_type or "none"
+    typer.echo(f"Loading pipeline (control={ctrl_label})...")
     pipeline = getPipeline()
-    pipeline.load()
+    pipeline.load(controlType=control_type)
 
     typer.echo(f"Generating image (seed={seed}, steps={steps}, guidance={guidance})...")
     t0 = time.monotonic()
-    image = pipeline.generate(positive, negative, seed=seed, steps=steps, guidance=guidance)
+    image = pipeline.generate(
+        positive, negative, seed=seed, steps=steps, guidance=guidance,
+        control=control_image,
+    )
     elapsed = round(time.monotonic() - t0, 2)
 
     # Write image
@@ -98,13 +124,23 @@ def generate(
     # Write run.json
     from roomify.pipeline import SD_MODEL_ID
 
+    from roomify.pipeline import CONTROLNET_CANNY_ID, CONTROLNET_DEPTH_ID
+
+    controlnet_id = None
+    if control_type == "depth":
+        controlnet_id = CONTROLNET_DEPTH_ID
+    elif control_type == "canny":
+        controlnet_id = CONTROLNET_CANNY_ID
+
     run_json = {
         "runId": run_id,
         "spec": dataclasses.asdict(room_spec),
         "strategy": strategy,
-        "controlled": control is not None,
-        "controlType": control,
+        "controlled": control_type is not None,
+        "controlType": control_type,
+        "refImageId": ref_image,
         "model": SD_MODEL_ID,
+        "controlnet": controlnet_id,
         "seed": seed,
         "steps": steps,
         "guidanceScale": guidance,
