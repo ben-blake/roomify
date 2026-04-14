@@ -2,9 +2,7 @@
 
 **Data-driven interior design image generator** — UMKC CS 5542 Quiz Challenge-1
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PLACEHOLDER_GITHUB_USER/roomify/blob/main/notebooks/00_launchColab.ipynb)
-
-> **Note:** Replace `PLACEHOLDER_GITHUB_USER` with your GitHub username after pushing the repo.
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ben-blake/roomify/blob/main/notebooks/00_launchColab.ipynb)
 
 ---
 
@@ -36,7 +34,7 @@ Three prompt strategies — `minimal`, `descriptive`, `styleAnchored` — are co
 ## Local development
 
 ```bash
-git clone https://github.com/PLACEHOLDER_GITHUB_USER/roomify.git
+git clone https://github.com/ben-blake/roomify.git
 cd roomify
 python3.11 -m venv .venv
 source .venv/bin/activate
