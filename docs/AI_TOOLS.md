@@ -89,4 +89,19 @@ throughout the project as new tools are used.
 
 ---
 
+### 2026-04-14 — Phase 2 Prompt Builder
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Wrote `tests/testPromptBuilder.py` (19 tests) before implementation — TDD RED phase
+- Implemented `src/roomify/promptBuilder.py`: `buildPrompt(spec, strategy) -> (positive, negative)`, `_renderTemplate()` with graceful handling of missing optional fields
+- Completed `RoomSpec` dataclass (required fields, `field(default_factory=list)` for furniture)
+- Updated `docs/TASKS.md` to mark Phase 2 complete
+
+**Hand-written / not AI-generated (this session):**
+- None — Phase 2 is pure Python module implementation
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*

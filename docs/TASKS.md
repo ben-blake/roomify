@@ -37,14 +37,14 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
 
 ---
 
-## Phase 2 — Prompt Builder (1-2 h)
+## Phase 2 — Prompt Builder (1-2 h) ✅
 
 - [x] Author `configs/prompts.yaml` with three strategies (`minimal`, `descriptive`, `styleAnchored`) and a shared negative prompt _(done in Phase 0)_
-- [ ] Implement `src/roomify/promptBuilder.py`: `buildPrompt(spec, strategy) -> (positive, negative)`
-- [x] Define `RoomSpec` dataclass _(stub exists; schema validation pending)_
-- [ ] `tests/testPromptBuilder.py`: each strategy produces non-empty, strategy-distinct prompts for a fixed spec
+- [x] Implement `src/roomify/promptBuilder.py`: `buildPrompt(spec, strategy) -> (positive, negative)`
+- [x] Define `RoomSpec` dataclass with schema validation (required fields, default empty list for furniture)
+- [x] `tests/testPromptBuilder.py`: 19 tests — non-empty prompts, strategy-distinct outputs, shared negative, optional-field graceful handling, ValueError on unknown strategy, RoomSpec field validation
 
-**Exit criterion:** unit tests green; manual eyeball of generated prompts reads cleanly.
+**Exit criterion:** unit tests green; manual eyeball of generated prompts reads cleanly. ✅ (40/40 total tests pass)
 
 ---
 
