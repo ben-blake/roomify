@@ -115,23 +115,20 @@ def test_cli_help_runs():
 # requirements.txt sanity check
 # ---------------------------------------------------------------------------
 
+# Packages that must appear in requirements.txt.
+# Colab 2026.01 pre-installs torch, torchvision, numpy, pandas, matplotlib,
+# transformers 5.0, accelerate, diffusers 0.37.1, opencv-python-headless,
+# Pillow, and huggingface-hub — so those are documented in comments, not
+# re-installed. Only packages absent from Colab belong in this list.
 REQUIRED_PACKAGES = [
-    "torch",
-    "diffusers",
-    "transformers",
-    "accelerate",
     "controlnet-aux",
-    "opencv-python",
     "open_clip_torch",
     "lpips",
-    "pandas",
-    "matplotlib",
     "typer",
     "streamlit",
-    "pillow",
     "pyngrok",
     "pytest",
-    "jupyter",
+    "PyYAML",
 ]
 
 
