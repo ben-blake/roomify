@@ -110,8 +110,10 @@ def render() -> None:
             control_image = None
             if ctrl_type and ref_id:
                 from roomify.controlSignals import extractCanny, extractDepth
-                from roomify.dataset import getRecord
-                record = getRecord(ref_id)
+                from roomify.dataset import getRecord, loadManifest
+                from roomify.paths import getDataDir
+                _manifest = loadManifest(getDataDir() / "sunrgbd_subset" / "manifest.csv")
+                record = getRecord(_manifest, ref_id)
                 if ctrl_type == "depth":
                     control_image = extractDepth(PILImage.open(record.depthPath))
                 else:
@@ -205,8 +207,10 @@ def render() -> None:
                 try:
                     from PIL import Image as PILImage
                     from roomify.controlSignals import extractCanny, extractDepth
-                    from roomify.dataset import getRecord
-                    record = getRecord(ref_image_id)
+                    from roomify.dataset import getRecord, loadManifest
+                    from roomify.paths import getDataDir
+                    _manifest = loadManifest(getDataDir() / "sunrgbd_subset" / "manifest.csv")
+                    record = getRecord(_manifest, ref_image_id)
                     if control_type == "depth":
                         ctrl_img = extractDepth(PILImage.open(record.depthPath))
                     else:

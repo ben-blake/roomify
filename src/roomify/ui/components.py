@@ -162,7 +162,7 @@ def imageCard(runJson: Dict[str, Any]) -> None:
 
     img_path = Path(runJson.get("imagePath", ""))
     if img_path.exists():
-        st.image(str(img_path), use_column_width=True)
+        st.image(str(img_path), use_container_width=True)
     else:
         st.warning(f"Image not found: {img_path}")
 
@@ -205,4 +205,4 @@ def controlPreview(imagePath: Path) -> None:
     if not img_path.exists():
         st.warning(f"Control image not found: {img_path}")
         return
-    st.image(str(img_path), caption="Control signal", use_column_width=True)
+    st.image(str(img_path), caption="Control signal", use_container_width=True)

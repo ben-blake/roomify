@@ -78,8 +78,10 @@ def generate(
     if control_type and ref_image:
         from PIL import Image as PILImage
         from roomify.controlSignals import extractCanny, extractDepth
-        from roomify.dataset import getRecord
-        record = getRecord(ref_image)
+        from roomify.dataset import getRecord, loadManifest
+        from roomify.paths import getDataDir
+        _manifest = loadManifest(getDataDir() / "sunrgbd_subset" / "manifest.csv")
+        record = getRecord(_manifest, ref_image)
         if control_type == "depth":
             ref_pil = PILImage.open(record.depthPath)
             control_image = extractDepth(ref_pil)

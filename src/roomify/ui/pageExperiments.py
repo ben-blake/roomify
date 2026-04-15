@@ -133,6 +133,6 @@ def _renderResults(sweep_dir: "Path") -> None:  # noqa: F821
             img_path = Path(run.get("imagePath", ""))
             if img_path.exists():
                 caption = f"{run.get('strategy', '')} | s={run.get('seed', '')}"
-                st.image(str(img_path), caption=caption, use_column_width=True)
+                st.image(str(img_path), caption=caption, use_container_width=True)
             else:
                 st.caption(f"Image missing: {img_path.name}")

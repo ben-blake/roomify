@@ -90,8 +90,10 @@ def runExperiment(
             control_type = "depth"
             from PIL import Image as PILImage
             from roomify.controlSignals import extractDepth
-            from roomify.dataset import getRecord
-            record = getRecord(ref_image_id)
+            from roomify.dataset import getRecord, loadManifest
+            from roomify.paths import getDataDir
+            _manifest = loadManifest(getDataDir() / "sunrgbd_subset" / "manifest.csv")
+            record = getRecord(_manifest, ref_image_id)
             control_image = extractDepth(PILImage.open(record.depthPath))
 
         pipeline.load(controlType=control_type)
