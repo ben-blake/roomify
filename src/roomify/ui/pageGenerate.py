@@ -44,7 +44,16 @@ def render() -> None:
 
     with left:
         st.subheader("Room Spec")
-        spec_dict = specForm()
+        # specForm() returns a dict only on the rerun triggered by "Apply spec".
+        # Save it to session_state so it survives when "Generate" is clicked.
+        submitted = specForm()
+        if submitted is not None:
+            st.session_state["spec_dict"] = submitted
+        spec_dict = st.session_state.get("spec_dict")
+        if spec_dict:
+            st.success(f"Spec loaded: {spec_dict.get('roomType')} / {spec_dict.get('style')}")
+        else:
+            st.warning("Fill in the form above and click **Apply spec** before generating.")
 
         st.subheader("Generation Settings")
         strategy = st.selectbox(
