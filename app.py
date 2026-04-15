@@ -68,4 +68,20 @@ PAGES = {
 }
 
 page = st.sidebar.radio("Navigation", list(PAGES.keys()))
+
+# ── Sidebar: clear outputs ──────────────────────────────────────────────────
+st.sidebar.divider()
+with st.sidebar.expander("Danger zone"):
+    st.warning("Deletes **all** images and run.json files from the outputs directory.")
+    if st.button("Clear all outputs", type="secondary"):
+        import shutil
+        from roomify.paths import getOutputDir
+        out = getOutputDir()
+        n = sum(1 for _ in out.rglob("run.json"))
+        shutil.rmtree(out)
+        out.mkdir(parents=True, exist_ok=True)
+        st.session_state.pop("variants", None)
+        st.success(f"Cleared {n} run(s).")
+        st.rerun()
+
 PAGES[page].render()
