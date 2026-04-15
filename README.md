@@ -120,6 +120,7 @@ The subset is cached to Google Drive. Subsequent Colab sessions load directly fr
 ## Runtime notes
 
 - **Platform:** Google Colab Pro (T4 / L4 / A100 depending on availability)
+- **Confirmed VRAM (A100-SXM4-80GB):** 5364/81920 MiB used (6.5%) for SD 1.5 + ControlNet with fp16 + attention slicing. No CPU offload needed on A100; T4 (15360 MiB) is sufficient with attention slicing enabled.
 - **Public URL:** Cloudflare quick tunnel (`trycloudflare.com`) — no auth, no signup. URL changes every Colab session.
 - **Persistence:** All generated outputs and HF model weights live under `/content/drive/MyDrive/roomify/` and survive Colab disconnects.
 - **GPU logged:** every `run.json` records the actual GPU detected by `nvidia-smi`.

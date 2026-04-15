@@ -175,4 +175,31 @@ throughout the project as new tools are used.
 
 ---
 
+### 2026-04-15 — Phase 6 Colab live testing + bug fixes
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Diagnosed and fixed `st.form` session state bug: form submit only valid during one Streamlit rerun; fixed by saving `specForm()` output to `st.session_state["spec_dict"]` so it persists across Generate button clicks
+- Fixed `use_column_width` deprecation warnings in `components.py` and `pageExperiments.py` → `use_container_width=True`
+- Fixed `getRecord()` missing-argument bug at 4 call sites (`cli.py`, `pageGenerate.py` ×2, `orchestrator.py`): function requires manifest df as first arg; all callers now call `loadManifest()` and pass result
+- Fixed Cell 8/9 silent subprocess output: added `capture_output=True, text=True` + explicit `print(result.stdout/stderr)`
+- Fixed Cell 9 `ModuleNotFoundError` for CLI subprocesses: injected `PYTHONPATH=str(REPO_DIR / 'src')` into subprocess env
+- Fixed `torch_dtype` deprecation in `pipeline.py` (3 places) → `dtype=torch.float16`; updated corresponding test assertion in `testPipeline.py`
+- Removed `TRANSFORMERS_CACHE` env var from `app.py` and Cell 3; `HF_HOME` alone is sufficient in current diffusers/transformers
+- Added notebook Cells 8–10 to `00_launchColab.ipynb`: experiment sweep (Cell 8), controlled/uncontrolled pair generation (Cell 9), VRAM headroom check (Cell 10)
+- Added "Clear all outputs" button to `app.py` sidebar (Danger zone expander)
+- Updated `docs/TASKS.md`: marked all 3 deferred Phase 6 manual tasks complete with actual VRAM/GPU data
+
+**Confirmed during live Colab session (A100-SXM4-80GB):**
+- 45-image sweep (5 specs × 3 strategies × 3 seeds) completed successfully via Streamlit Experiments page
+- Controlled (depth) vs uncontrolled pair for `bedroom_01`, seed 42 — layout adherence confirmed
+- VRAM usage: 5364/81920 MiB (6.5%) — attention slicing sufficient, CPU offload not needed
+
+**Hand-written / not AI-generated (this session):**
+- All Colab cell execution and output verification
+- Visual inspection of generated images
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*
