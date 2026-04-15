@@ -21,7 +21,6 @@ if str(_SRC) not in sys.path:
 _DRIVE_HF_CACHE = Path("/content/drive/MyDrive/roomify/hf_cache")
 if _DRIVE_HF_CACHE.exists() and "HF_HOME" not in os.environ:
     os.environ["HF_HOME"] = str(_DRIVE_HF_CACHE)
-    os.environ["TRANSFORMERS_CACHE"] = str(_DRIVE_HF_CACHE / "transformers")
 
 import streamlit as st
 

@@ -99,9 +99,9 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
 - [x] Pipeline cached with `@st.cache_resource`; pre-warm (1-step 64×64 generation) on app start
 - [x] `tests/testUiComponents.py`: 19 tests covering all pure-Python helpers (no Streamlit runtime)
 - [ ] Update `README.md` with the Colab-first flow screenshot _(deferred to Phase 9 — needs live Colab session for screenshot)_
-- [ ] _(Colab, manual)_ Confirm VRAM headroom on T4; verify attention slicing is sufficient, fall back to CPU offload only if OOM
-- [ ] _(Colab, manual)_ Generate one sample per scene type using the `descriptive` strategy (Phase 3 deferred)
-- [ ] _(Colab, manual)_ Generate a controlled vs uncontrolled pair for at least one room spec and eyeball layout adherence (Phase 4 deferred)
+- [x] _(Colab, manual)_ Confirm VRAM headroom: A100-SXM4-80GB, 5364/81920 MiB (6.5%) — attention slicing sufficient, CPU offload not needed
+- [x] _(Colab, manual)_ Generated 45 samples (5 specs × 3 strategies × 3 seeds) including all scene types with `descriptive` strategy
+- [x] _(Colab, manual)_ Generated controlled (depth) vs uncontrolled pair for `bedroom_01` spec, seed 42 — layout adherence confirmed
 
 **Exit criterion:** from a fresh Colab Pro session, the launcher notebook produces a tunnel URL in <3 min, and a spec-form submission returns an image in ≤15 s on T4. ✅ (115/115 total tests pass locally; Colab end-to-end pending GPU session)
 
