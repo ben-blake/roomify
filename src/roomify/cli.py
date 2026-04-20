@@ -196,10 +196,19 @@ def evaluate(
         dir_okay=True,
     ),
 ) -> None:
-    """Compute evaluation metrics over a run directory."""
-    typer.echo(f"[roomify evaluate] run={run}")
-    typer.echo("Phase 7 implementation pending.")
-    raise typer.Exit(code=0)
+    """Compute CLIP alignment, LPIPS diversity, and style consistency metrics."""
+    from roomify.evaluation import clipAlignment, lpipsDiversity, styleConsistency
+
+    typer.echo("Computing CLIP alignment...")
+    df = clipAlignment(run)
+    if not df.empty:
+        typer.echo(df.to_string(index=False))
+        typer.echo(f"\nMean CLIP score: {df['clipScore'].mean():.4f}")
+    else:
+        typer.echo("No images found for CLIP alignment.")
+
+    typer.echo(f"\nLPIPS diversity:    {lpipsDiversity(run):.4f}")
+    typer.echo(f"Style consistency:  {styleConsistency(run):.4f}")
 
 
 @app.command()
@@ -213,10 +222,64 @@ def report(
         dir_okay=True,
     ),
 ) -> None:
-    """Render a contact sheet and metrics markdown table for a run."""
-    typer.echo(f"[roomify report] run={run}")
-    typer.echo("Phase 7 implementation pending.")
-    raise typer.Exit(code=0)
+    """Render a contact sheet PNG and markdown metrics table for a run."""
+    from roomify.reporting import contactSheet, metricsTable
+
+    sheet = contactSheet(run)
+    sheet_path = run / "contact_sheet.png"
+    sheet.save(str(sheet_path))
+    typer.echo(f"Contact sheet saved → {sheet_path}")
+
+    typer.echo("\n" + metricsTable(run))
+
+
+@app.command()
+def rate(
+    run: Path = typer.Argument(..., help="Path to a run or sweep directory."),
+    run_id: Optional[str] = typer.Option(
+        None, "--run-id", help="Rate a specific runId only."
+    ),
+) -> None:
+    """Interactively rate generated images (1-5 stars)."""
+    from roomify.evaluation import loadRatings, saveRating
+
+    run_jsons = sorted(run.rglob("run.json"))
+    if not run_jsons:
+        typer.echo(f"No run.json files found in {run}", err=True)
+        raise typer.Exit(1)
+
+    existing = loadRatings(run)
+    rated_ids = set(existing["runId"].tolist()) if not existing.empty else set()
+
+    for run_json in run_jsons:
+        data = json.loads(run_json.read_text())
+        rid = data["runId"]
+
+        if run_id and rid != run_id:
+            continue
+
+        already = f" [rated {int(existing.loc[existing['runId']==rid, 'rating'].iloc[0])}★]" \
+            if rid in rated_ids else ""
+        typer.echo(f"\nRun: {rid}{already}")
+        typer.echo(f"  Strategy={data.get('strategy')}  Seed={data.get('seed')}  "
+                   f"Controlled={data.get('controlled')}")
+        typer.echo(f"  Prompt: {data.get('prompt', '')[:80]}")
+
+        raw = typer.prompt("Rating [1-5] or 's' to skip", default="s")
+        if raw.strip().lower() == "s":
+            continue
+        try:
+            val = int(raw.strip())
+        except ValueError:
+            typer.echo("Skipped — invalid input.")
+            continue
+        if not 1 <= val <= 5:
+            typer.echo("Skipped — rating must be 1-5.")
+            continue
+
+        notes = typer.prompt("Notes (Enter to skip)", default="")
+        saveRating(run, rid, val, notes)
+        typer.echo(f"Saved {val}★ for {rid}.")
 
 
 def main() -> None:

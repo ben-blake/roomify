@@ -202,4 +202,25 @@ throughout the project as new tools are used.
 
 ---
 
+### 2026-04-20 — Phase 7 Evaluation & Reporting
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Wrote `tests/testEvaluation.py` (18 tests) before implementation — TDD RED phase; used `patch.dict(sys.modules)` fixture to avoid polluting testPipeline.py's torch mock
+- Wrote `tests/testReporting.py` (15 tests) before implementation — TDD RED phase; no GPU mocking needed (pure Pillow + JSON)
+- Implemented `src/roomify/evaluation.py`: `clipAlignment()` (CLIP ViT-B-32 text-image cosine similarity), `lpipsDiversity()` (mean pairwise LPIPS distance), `styleConsistency()` (mean pairwise CLIP image-image similarity), `saveRating()` / `loadRatings()` (ratings.csv upsert workflow)
+- Implemented `src/roomify/reporting.py`: `contactSheet()` (smallest-square PIL grid, configurable thumbSize), `metricsTable()` (markdown table from run.json files)
+- Wired `roomify evaluate` CLI command: calls all three metrics, prints DataFrame + means
+- Wired `roomify report` CLI command: saves contact_sheet.png + prints markdown table
+- Added `roomify rate` CLI command: interactive 1-5 star rating loop over a run/sweep directory
+- Added rating slider widget to Gallery page (`pageGallery.py`): select_slider 0-5 with star display, auto-saves on change via `saveRating()` + `st.rerun()`
+- Created `notebooks/03_evaluation.ipynb`: 8-cell notebook (setup, sweep picker, CLIP alignment, LPIPS/consistency, contact sheet, metrics table, controlled vs uncontrolled comparison, top-N export)
+- Updated `docs/TASKS.md` to mark Phase 7 complete
+
+**Hand-written / not AI-generated (this session):**
+- None — Phase 7 is pure Python module implementation
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*

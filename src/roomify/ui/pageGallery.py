@@ -55,8 +55,26 @@ def render() -> None:
         metricsTable(df)
 
     # ── Image grid (3 columns) ───────────────────────────────────────────────
+    from roomify.evaluation import loadRatings, saveRating
+    ratings_df = loadRatings(output_dir)
+    rated_map = {} if ratings_df.empty else dict(
+        zip(ratings_df["runId"], ratings_df["rating"].astype(int))
+    )
+
     n_cols = 3
     cols = st.columns(n_cols)
     for idx, run in enumerate(runs):
         with cols[idx % n_cols]:
             imageCard(run)
+            run_id = run.get("runId", "")
+            current = int(rated_map.get(run_id, 0))
+            new_val = st.select_slider(
+                "Rating",
+                options=[0, 1, 2, 3, 4, 5],
+                value=current,
+                format_func=lambda v: "unrated" if v == 0 else f"{'★' * v}{'☆' * (5 - v)}",
+                key=f"rating_{run_id}",
+            )
+            if new_val != current and new_val > 0:
+                saveRating(output_dir, run_id, new_val)
+                st.rerun()
