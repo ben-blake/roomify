@@ -41,7 +41,7 @@ class AnimateDiffGenerator:
             return
 
         import torch  # type: ignore[import-not-found]
-        from diffusers import AnimateDiffPipeline, MotionAdapter  # type: ignore[import-not-found]
+        from diffusers import AnimateDiffPipeline, DDIMScheduler, MotionAdapter  # type: ignore[import-not-found]
 
         adapter = MotionAdapter.from_pretrained(MOTION_ADAPTER_ID, dtype=torch.float16)
         pipe = AnimateDiffPipeline.from_pretrained(
@@ -49,7 +49,20 @@ class AnimateDiffGenerator:
             motion_adapter=adapter,
             dtype=torch.float16,
         )
+
+        # DDIMScheduler is required for temporal coherence — the default PNDM
+        # scheduler treats frames independently and causes flickering.
+        pipe.scheduler = DDIMScheduler.from_pretrained(
+            SD_MODEL_ID,
+            subfolder="scheduler",
+            clip_sample=False,
+            timestep_spacing="linspace",
+            beta_schedule="linear",
+            steps_offset=1,
+        )
+
         pipe.enable_attention_slicing()
+        pipe.enable_vae_slicing()
         if torch.cuda.is_available():
             pipe.to("cuda")
 

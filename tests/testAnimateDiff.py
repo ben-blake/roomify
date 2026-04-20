@@ -41,6 +41,11 @@ def _make_diffusers_mock() -> types.ModuleType:
     adapter_cls = MagicMock()
     adapter_cls.from_pretrained = MagicMock(return_value=adapter_instance)
     diffusers.MotionAdapter = adapter_cls
+    # DDIMScheduler
+    scheduler_instance = MagicMock()
+    scheduler_cls = MagicMock()
+    scheduler_cls.from_pretrained = MagicMock(return_value=scheduler_instance)
+    diffusers.DDIMScheduler = scheduler_cls
     # AnimateDiffPipeline
     frames_output = MagicMock()
     fake_frames = [Image.new("RGB", (64, 64), color=(i * 10, 0, 0)) for i in range(4)]
@@ -48,6 +53,7 @@ def _make_diffusers_mock() -> types.ModuleType:
     pipe_instance = MagicMock()
     pipe_instance.return_value = frames_output
     pipe_instance.enable_attention_slicing = MagicMock()
+    pipe_instance.enable_vae_slicing = MagicMock()
     pipe_cls = MagicMock()
     pipe_cls.from_pretrained = MagicMock(return_value=pipe_instance)
     diffusers.AnimateDiffPipeline = pipe_cls
@@ -169,6 +175,24 @@ class TestLoad:
         gen.load()
         pipe_instance = diffusers.AnimateDiffPipeline.from_pretrained.return_value
         pipe_instance.enable_attention_slicing.assert_called_once()
+
+    def test_load_sets_ddim_scheduler(self):
+        import diffusers
+        m = _get_module()
+        gen = m.AnimateDiffGenerator()
+        gen.load()
+        diffusers.DDIMScheduler.from_pretrained.assert_called_once()
+        _, kwargs = diffusers.DDIMScheduler.from_pretrained.call_args
+        assert kwargs.get("clip_sample") is False
+        assert kwargs.get("beta_schedule") == "linear"
+
+    def test_load_enables_vae_slicing(self):
+        import diffusers
+        m = _get_module()
+        gen = m.AnimateDiffGenerator()
+        gen.load()
+        pipe_instance = diffusers.AnimateDiffPipeline.from_pretrained.return_value
+        pipe_instance.enable_vae_slicing.assert_called_once()
 
 
 # ---------------------------------------------------------------------------
