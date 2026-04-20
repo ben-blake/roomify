@@ -1,8 +1,6 @@
-# Phase 8 — Bonus: Multimodal Extension
+# Bonus: Multimodal Extension
 
 **Course:** UMKC CS 5542 — Quiz Challenge-1
-**Phase:** 8 (optional bonus)
-**Status:** Complete
 
 ---
 
@@ -10,41 +8,10 @@
 
 Two complementary animation approaches were implemented, both producing looping GIFs from Roomify's room design outputs. They are surfaced together in the Streamlit **Animate** tab and via the CLI.
 
----
-
-## Approach 1 — Ken Burns pan/zoom effect
-
-**Module:** `src/roomify/kenBurns.py`
-**CLI:** `roomify kenburns --image <path> --output <gif> --motion zoom_in`
-**Runtime:** ~0.1 s on CPU — no GPU required
-
-Takes any static PNG from the Generate pipeline and applies a smooth camera motion using PIL crop + resize. Six motion types are supported:
-
-| Motion | Description |
-|--------|-------------|
-| `zoom_in` | Camera slowly pushes into the center of the room |
-| `zoom_out` | Camera pulls back to reveal the full scene |
-| `pan_right` | Camera travels left-to-right across the room |
-| `pan_left` | Camera travels right-to-left |
-| `pan_up` | Camera tilts up from floor to ceiling |
-| `pan_down` | Camera tilts down from ceiling to floor |
-
-All motions use a smoothstep ease-in-out curve so acceleration and deceleration look natural. Intensity (default 0.2 = 20% crop margin) and frame count are configurable.
-
-**Why this works well:** because Roomify's static images are high-quality 512×512 renders with fine detail, a slow zoom reveals texture and depth that is invisible at full scale. The effect is deterministic and produces professional-looking results from any generation.
-
-### CLI example
-
-```bash
-python -m roomify.cli kenburns \
-  --image outputs/2026-04-20T20-11-11_core_comparison/kitchen_01_styleAnchored_unctrl_s123/img_0.png \
-  --output examples/phase8/kitchen_01_styleAnchored_s123_kenburns.gif \
-  --motion zoom_in --frames 24 --fps 12 --intensity 0.2
-```
 
 ---
 
-## Approach 2 — AnimateDiff text-to-video
+## Approach 1 — AnimateDiff text-to-video
 
 **Module:** `src/roomify/animateDiff.py`
 **CLI:** `roomify animate --spec configs/examples/kitchen_01.yaml --strategy styleAnchored --seed 123`
@@ -76,17 +43,57 @@ python -m roomify.cli animate \
 
 ---
 
+## Approach 2 — Ken Burns pan/zoom effect
+
+**Module:** `src/roomify/kenBurns.py`
+**CLI:** `roomify kenburns --image <path> --output <gif> --motion zoom_in`
+**Runtime:** ~0.1 s on CPU — no GPU required
+
+Takes any static PNG from the Generate pipeline and applies a smooth camera motion using PIL crop + resize. Six motion types are supported:
+
+| Motion | Description |
+|--------|-------------|
+| `zoom_in` | Camera slowly pushes into the center of the room |
+| `zoom_out` | Camera pulls back to reveal the full scene |
+| `pan_right` | Camera travels left-to-right across the room |
+| `pan_left` | Camera travels right-to-left |
+| `pan_up` | Camera tilts up from floor to ceiling |
+| `pan_down` | Camera tilts down from ceiling to floor |
+
+All motions use a smoothstep ease-in-out curve so acceleration and deceleration look natural. Intensity (default 0.2 = 20% crop margin) and frame count are configurable.
+
+**Why this works well:** because Roomify's static images are high-quality 512×512 renders with fine detail, a slow zoom reveals texture and depth that is invisible at full scale. The effect is deterministic and produces professional-looking results from any generation.
+
+### CLI example
+
+```bash
+python -m roomify.cli kenburns \
+  --image outputs/2026-04-20T20-11-11_core_comparison/kitchen_01_styleAnchored_unctrl_s123/img_0.png \
+  --output examples/phase8/kitchen_01_styleAnchored_s123_kenburns.gif \
+  --motion zoom_in --frames 24 --fps 12 --intensity 0.2
+```
+
+---
+
 ## Phase 8 outputs
 
-Applied to the top 3 CLIP-scoring runs from the Phase 7 `core_comparison` sweep:
+Applied to the top 3 CLIP-scoring runs from the Phase 7 `core_comparison` sweep.
 
-| Run | CLIP Score | Ken Burns motion | GIF |
-|-----|-----------|-----------------|-----|
-| kitchen_01 · styleAnchored · seed 123 | 0.3529 | zoom_in | `examples/phase8/kitchen_01_styleAnchored_unctrl_s123_kenburns.gif` |
-| bathroom_01 · descriptive · seed 7 | 0.3500 | pan_right | `examples/phase8/bathroom_01_descriptive_unctrl_s7_kenburns.gif` |
-| kitchen_01 · descriptive · seed 123 | 0.3448 | zoom_out | `examples/phase8/kitchen_01_descriptive_unctrl_s123_kenburns.gif` |
+### Ken Burns
 
-AnimateDiff GIFs for the same three specs are in `examples/phase8/*_animatediff.gif`.
+| Run | CLIP Score | Motion | File |
+|-----|-----------|--------|------|
+| kitchen_01 · styleAnchored · seed 123 | 0.3529 | zoom_in | [kitchen_01_styleAnchored_unctrl_s123_kenburns.gif](../examples/phase8/kitchen_01_styleAnchored_unctrl_s123_kenburns.gif) |
+| bathroom_01 · descriptive · seed 7 | 0.3500 | pan_right | [bathroom_01_descriptive_unctrl_s7_kenburns.gif](../examples/phase8/bathroom_01_descriptive_unctrl_s7_kenburns.gif) |
+| kitchen_01 · descriptive · seed 123 | 0.3448 | zoom_out | [kitchen_01_descriptive_unctrl_s123_kenburns.gif](../examples/phase8/kitchen_01_descriptive_unctrl_s123_kenburns.gif) |
+
+### AnimateDiff
+
+| Run | CLIP Score | File |
+|-----|-----------|------|
+| kitchen_01 · styleAnchored · seed 123 | 0.3529 | [kitchen_01_styleAnchored_s123_animatediff.gif](../examples/phase8/kitchen_01_styleAnchored_s123_animatediff.gif) |
+| bathroom_01 · descriptive · seed 7 | 0.3500 | [bathroom_01_descriptive_s7_animatediff.gif](../examples/phase8/bathroom_01_descriptive_s7_animatediff.gif) |
+| kitchen_01 · descriptive · seed 123 | 0.3448 | [kitchen_01_descriptive_s123_animatediff.gif](../examples/phase8/kitchen_01_descriptive_s123_animatediff.gif) |
 
 ---
 

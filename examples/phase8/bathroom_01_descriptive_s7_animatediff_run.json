@@ -1,0 +1,29 @@
+{
+  "runId": "bathroom_01_descriptive_s7",
+  "type": "animate",
+  "spec": {
+    "id": "bathroom_01",
+    "roomType": "bathroom",
+    "size": "6x8 ft",
+    "style": "boho",
+    "furniture": [
+      "freestanding tub",
+      "vanity",
+      "woven baskets",
+      "plants"
+    ],
+    "lighting": "soft sconce lighting",
+    "mood": "relaxing, organic",
+    "referenceImageId": ""
+  },
+  "strategy": "descriptive",
+  "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+  "motionAdapter": "guoyww/animatediff-motion-adapter-v1-5-2",
+  "seed": 7,
+  "steps": 25,
+  "guidanceScale": 7.5,
+  "numFrames": 16,
+  "fps": 8,
+  "prompt": "A boho bathroom, 6x8 ft, featuring freestanding tub, vanity, woven baskets, plants, soft sconce lighting, relaxing, organic, interior design photography, 4k",
+  "gitSha": "585589a"
+}

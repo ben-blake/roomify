@@ -1,0 +1,29 @@
+{
+  "runId": "kitchen_01_styleAnchored_s123",
+  "type": "animate",
+  "spec": {
+    "id": "kitchen_01",
+    "roomType": "kitchen",
+    "size": "10x12 ft",
+    "style": "industrial",
+    "furniture": [
+      "island",
+      "barstools",
+      "open shelving",
+      "range hood"
+    ],
+    "lighting": "pendant lights over island",
+    "mood": "clean, functional",
+    "referenceImageId": ""
+  },
+  "strategy": "styleAnchored",
+  "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+  "motionAdapter": "guoyww/animatediff-motion-adapter-v1-5-2",
+  "seed": 123,
+  "steps": 25,
+  "guidanceScale": 7.5,
+  "numFrames": 16,
+  "fps": 8,
+  "prompt": "A industrial kitchen, 10x12 ft, featuring island, barstools, open shelving, range hood, pendant lights over island, clean, functional, interior design photography, 4k, inspired by IKEA catalog photography, muted palette, natural materials, high-end architectural digest editorial",
+  "gitSha": "585589a"
+}
