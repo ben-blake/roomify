@@ -223,4 +223,29 @@ throughout the project as new tools are used.
 
 ---
 
+### 2026-04-20 — Phase 7 Colab live testing + bug fixes
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Diagnosed and fixed `pipeline.load()` crash when switching from uncontrolled to controlled mid-sweep: added early-return when `controlType` is unchanged, and `del self._sd` + `torch.cuda.empty_cache()` before loading a different pipeline variant
+- Fixed `dtype` vs `torch_dtype` mismatch: all three `from_pretrained` calls updated to `torch_dtype=torch.float16` (diffusers validates kwargs; `ControlNetModel` raised a hard error on unrecognized `dtype=`)
+- Added `conditioningScale` parameter (default 0.6) to `Pipeline.generate()` and threaded through `orchestrator.py` + `run.json` to reduce ControlNet over-constraint
+- Fixed `top_exports` cell in `03_evaluation.ipynb`: used `src.parent.name` as filename so all 6 exports are uniquely named instead of all overwriting `img_0.png`
+- Created `examples/phase7/METRICS.md` summarizing aggregate metrics, top-10 CLIP table, and key findings
+- Committed all Phase 7 evaluation outputs to `examples/phase7/` (contact sheet, 15 ctrl/unctrl comparison PNGs, 3 strategy comparison PNGs, 6 top-export PNGs)
+- Marked both remaining manual Phase 7 tasks complete in `docs/TASKS.md`
+
+**Confirmed during live Colab session (A100-SXM4-80GB):**
+- 90-image `core_comparison` sweep completed (5 specs × 3 strategies × 2 ctrl/unctrl × 3 seeds)
+- Mean CLIP score: 0.2739; LPIPS diversity: 0.7583; style consistency: 0.5431
+- Top CLIP scores are uncontrolled images — confirms ControlNet trades prompt alignment for spatial structure
+
+**Hand-written / not AI-generated (this session):**
+- All Colab cell execution and output verification
+- Visual inspection of controlled vs uncontrolled image pairs
+- Selection and download of output PNGs for the repo
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*

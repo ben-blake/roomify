@@ -158,6 +158,20 @@ docs/
 
 ---
 
+## Sample outputs
+
+Generated on Colab Pro (A100-SXM4-80GB) from the `core_comparison` sweep — 90 images across 5 room types, 3 prompt strategies, controlled (depth ControlNet) and uncontrolled.
+
+| | |
+|---|---|
+| [Contact sheet](examples/phase7/contact_sheet.png) | Full 90-image grid overview |
+| [Controlled vs uncontrolled](examples/phase7/controlled-vs-uncontrolled/) | Side-by-side depth ControlNet pairs for all 5 specs |
+| [Strategy comparison](examples/phase7/strategy-compare/) | minimal vs descriptive vs styleAnchored |
+| [Top exports](examples/phase7/top-exports/) | Top 6 images by CLIP alignment score |
+| [Metrics summary](examples/phase7/METRICS.md) | CLIP 0.2739 mean · LPIPS 0.7583 · style consistency 0.5431 |
+
+---
+
 ## AI tools disclosure
 
 This project uses AI tools. See [docs/AI_TOOLS.md](docs/AI_TOOLS.md) for the full disclosure required by course policy.
