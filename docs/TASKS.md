@@ -114,10 +114,10 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
 - [x] Implement `src/roomify/reporting.py`: `contactSheet(runDir, thumbSize)`, `metricsTable(runDir)`
 - [x] Wire `roomify evaluate` and `roomify report` CLI commands (previously stubs)
 - [x] `notebooks/03_evaluation.ipynb`: 8-cell notebook covering CLIP alignment, LPIPS diversity, style consistency, contact sheet, metrics table, controlled vs uncontrolled comparison, top-N export
-- [ ] _(Colab, manual)_ Run full evaluation on a completed sweep and produce contact_sheet.png + metrics table
-- [ ] _(Colab, manual)_ Export top comparison PNGs for slide inclusion
+- [x] _(Colab, manual)_ Run full evaluation on 90-image core_comparison sweep: CLIP mean=0.2739, LPIPS diversity=0.7583, style consistency=0.5431
+- [x] _(Colab, manual)_ Export top comparison PNGs for slide inclusion — committed to `examples/phase7/`
 
-**Exit criterion:** one markdown metrics table + one contact-sheet PNG demonstrating improved beats baseline. ✅ (148/148 total tests pass locally; Colab eval run pending GPU session)
+**Exit criterion:** one markdown metrics table + one contact-sheet PNG demonstrating improved beats baseline. ✅ (148/148 total tests pass locally; Colab eval complete 2026-04-20)
 
 ---
 
