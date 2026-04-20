@@ -39,8 +39,22 @@ class Pipeline:
           - 'depth' / 'canny' → loads StableDiffusionControlNetPipeline with the
             corresponding ControlNet checkpoint.
           - None → loads plain StableDiffusionPipeline.
+
+        No-op if already loaded with the same controlType.
+        When switching types, frees VRAM before loading the new pipeline.
         """
+        if self._loaded and self._controlType == controlType:
+            return
+
         import torch  # type: ignore[import-not-found]
+
+        # Release previous pipeline to free VRAM before loading a new variant.
+        if self._sd is not None:
+            del self._sd
+            self._sd = None
+            self._loaded = False
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
         if controlType in ("depth", "canny"):
             from diffusers import (  # type: ignore[import-not-found]
