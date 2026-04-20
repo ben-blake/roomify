@@ -149,8 +149,11 @@ class TestLoad:
         m = _get_module()
         gen = m.AnimateDiffGenerator()
         gen.load()
-        _, kwargs = diffusers.AnimateDiffPipeline.from_pretrained.call_args
-        assert kwargs.get("dtype") == torch.float16
+        # MotionAdapter uses torch_dtype=; AnimateDiffPipeline uses dtype=
+        _, adapter_kwargs = diffusers.MotionAdapter.from_pretrained.call_args
+        assert adapter_kwargs.get("torch_dtype") == torch.float16
+        _, pipe_kwargs = diffusers.AnimateDiffPipeline.from_pretrained.call_args
+        assert pipe_kwargs.get("dtype") == torch.float16
 
     def test_load_noop_when_already_loaded(self):
         import diffusers
