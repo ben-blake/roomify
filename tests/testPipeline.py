@@ -139,7 +139,7 @@ def test_load_passes_fp16_dtype():
     p = Pipeline()
     p.load()
     kwargs = _mock_sd_class.from_pretrained.call_args[1]
-    assert "dtype" in kwargs
+    assert "torch_dtype" in kwargs
 
 
 def test_load_enables_attention_slicing():

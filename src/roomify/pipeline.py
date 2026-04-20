@@ -67,12 +67,12 @@ class Pipeline:
             )
             controlnet = ControlNetModel.from_pretrained(
                 controlnet_id,
-                dtype=torch.float16,
+                torch_dtype=torch.float16,
             )
             pipe = StableDiffusionControlNetPipeline.from_pretrained(
                 SD_MODEL_ID,
                 controlnet=controlnet,
-                dtype=torch.float16,
+                torch_dtype=torch.float16,
                 safety_checker=None,
             )
         else:
@@ -80,7 +80,7 @@ class Pipeline:
 
             pipe = StableDiffusionPipeline.from_pretrained(
                 SD_MODEL_ID,
-                dtype=torch.float16,
+                torch_dtype=torch.float16,
                 safety_checker=None,
             )
 
