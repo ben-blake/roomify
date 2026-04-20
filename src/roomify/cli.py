@@ -282,6 +282,97 @@ def rate(
         typer.echo(f"Saved {val}★ for {rid}.")
 
 
+@app.command()
+def animate(
+    spec: Path = typer.Option(
+        ...,
+        "--spec",
+        help="Path to a RoomSpec YAML file.",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+    ),
+    strategy: str = typer.Option(
+        "descriptive",
+        "--strategy",
+        help="Prompt strategy: minimal | descriptive | styleAnchored",
+    ),
+    seed: int = typer.Option(42, "--seed", help="RNG seed for reproducibility."),
+    steps: int = typer.Option(25, "--steps", help="Number of diffusion steps."),
+    guidance: float = typer.Option(7.5, "--guidance", help="Classifier-free guidance scale."),
+    frames: int = typer.Option(16, "--frames", help="Number of animation frames."),
+    fps: int = typer.Option(8, "--fps", help="GIF playback speed in frames per second."),
+) -> None:
+    """Generate an animated GIF from a room spec using AnimateDiff."""
+    import dataclasses
+    import json
+    import subprocess
+    import time
+    from datetime import datetime, timezone
+
+    import yaml
+
+    from roomify.animateDiff import framesToGif, getAnimateDiffGenerator
+    from roomify.paths import getOutputDir
+    from roomify.promptBuilder import RoomSpec, buildPrompt
+
+    raw: dict = yaml.safe_load(spec.read_text())
+    valid_fields = set(RoomSpec.__dataclass_fields__.keys())
+    room_spec = RoomSpec(**{k: v for k, v in raw.items() if k in valid_fields})
+
+    positive, negative = buildPrompt(room_spec, strategy)
+
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S")
+    run_id = f"{ts}_{room_spec.id}_anim"
+    out_dir = getOutputDir() / run_id
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    typer.echo(f"Loading AnimateDiff pipeline...")
+    gen = getAnimateDiffGenerator()
+    gen.load()
+
+    typer.echo(f"Generating {frames} frames (seed={seed}, steps={steps})...")
+    t0 = time.monotonic()
+    frame_list = gen.generate(positive, negative, seed=seed, steps=steps, guidance=guidance, numFrames=frames)
+    elapsed = round(time.monotonic() - t0, 2)
+
+    gif_path = out_dir / "anim.gif"
+    framesToGif(frame_list, gif_path, fps=fps)
+
+    try:
+        git_sha = subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except Exception:
+        git_sha = "unknown"
+
+    from roomify.animateDiff import MOTION_ADAPTER_ID, SD_MODEL_ID as ANIM_SD_MODEL_ID
+
+    run_json = {
+        "runId": run_id,
+        "type": "animate",
+        "spec": dataclasses.asdict(room_spec),
+        "strategy": strategy,
+        "model": ANIM_SD_MODEL_ID,
+        "motionAdapter": MOTION_ADAPTER_ID,
+        "seed": seed,
+        "steps": steps,
+        "guidanceScale": guidance,
+        "numFrames": frames,
+        "fps": fps,
+        "prompt": positive,
+        "negativePrompt": negative,
+        "gifPath": str(gif_path),
+        "gitSha": git_sha,
+        "timings": {"generateSec": elapsed},
+    }
+    (out_dir / "run.json").write_text(json.dumps(run_json, indent=2))
+
+    typer.echo(f"Done → {gif_path}")
+
+
 def main() -> None:
     app()
 

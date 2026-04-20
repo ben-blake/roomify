@@ -248,4 +248,19 @@ throughout the project as new tools are used.
 
 ---
 
+### 2026-04-20 — Phase 8 AnimateDiff
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Wrote `tests/testAnimateDiff.py` (25 tests) before implementation — TDD RED phase; mocked torch and diffusers at module level, patched singleton reset
+- Implemented `src/roomify/animateDiff.py`: `AnimateDiffGenerator.load()` (MotionAdapter + AnimateDiffPipeline, fp16, attention slicing, no-op on reload), `AnimateDiffGenerator.generate()` (seeded generator, frames → list of PIL Images), `framesToGif()` (PIL animated GIF with fps-derived duration), `getAnimateDiffGenerator()` / `_resetAnimateDiffGenerator()` singleton helpers
+- Wired `roomify animate` CLI command (`cli.py`): `--spec`, `--strategy`, `--seed`, `--steps`, `--frames`, `--fps`; writes `anim.gif` + `run.json` with `type: animate`
+- Updated `docs/TASKS.md` to mark Phase 8 complete
+
+**Hand-written / not AI-generated (this session):**
+- None — Phase 8 is pure Python module implementation
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*

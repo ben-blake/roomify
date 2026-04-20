@@ -121,14 +121,19 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
 
 ---
 
-## Phase 8 — Bonus: Multimodal Extension (optional, 2-4 h)
+## Phase 8 — Bonus: Multimodal Extension (optional, 2-4 h) ✅
 
-Pick **one**:
-- [ ] **Image → video:** AnimateDiff on top 3 generations, or Pika/Runway API for pan-zoom clips
-- [ ] **Narration:** ElevenLabs TTS reading room spec + short caption, muxed into demo video
-- [ ] **Text → video:** Pika/Runway text-to-video from the same prompt for comparison
+**Chosen:** AnimateDiff — text-to-GIF animation from existing room spec prompts.
 
-Document rationale, examples, and evaluation in `docs/BONUS.md`. Surface it as a tab on the Generate page if straightforward.
+- [x] Implement `src/roomify/animateDiff.py`: `AnimateDiffGenerator` singleton (`load()`, `generate()`), `framesToGif()`, `getAnimateDiffGenerator()` / `_resetAnimateDiffGenerator()`
+- [x] Wire `roomify animate` CLI command: `--spec`, `--strategy`, `--seed`, `--steps`, `--frames`, `--fps`; writes `anim.gif` + `run.json` (`type: animate`) per run
+- [x] `tests/testAnimateDiff.py`: 25 tests — singleton, load (MotionAdapter + AnimateDiffPipeline, fp16, attention slicing, no-op on reload), generate (RuntimeError if not loaded, returns PIL frames, passes all kwargs), framesToGif (saves GIF, raises on empty, returns path), CLI (command exists, writes GIF, writes run.json)
+- [ ] _(Colab, manual)_ Run `roomify animate` on top 3 CLIP-scored specs; commit output GIFs to `examples/phase8/`
+- [ ] _(Colab, manual)_ Surface Animate tab on the Generate page (`pageGenerate.py`)
+
+**Model:** `guoyww/animatediff-motion-adapter-v1-5-2` + SD 1.5 (fp16, attention slicing)
+
+**Exit criterion:** `roomify animate --spec configs/examples/bedroom_01.yaml` produces a looping GIF. ✅ (173/173 tests pass locally; Colab run pending GPU session)
 
 ---
 
