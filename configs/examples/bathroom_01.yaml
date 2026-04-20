@@ -1,0 +1,11 @@
+id: bathroom_01
+roomType: bathroom
+size: "6x8 ft"
+style: boho
+furniture:
+  - freestanding tub
+  - vanity
+  - woven baskets
+  - plants
+lighting: "soft sconce lighting"
+mood: "relaxing, organic"

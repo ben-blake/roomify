@@ -1,0 +1,11 @@
+id: kitchen_01
+roomType: kitchen
+size: "10x12 ft"
+style: industrial
+furniture:
+  - island
+  - barstools
+  - open shelving
+  - range hood
+lighting: "pendant lights over island"
+mood: "clean, functional"
