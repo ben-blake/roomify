@@ -105,6 +105,7 @@ def runExperiment(
             steps=30,
             guidance=7.5,
             control=control_image,
+            conditioningScale=config.get("conditioningScale", 0.6),
         )
         elapsed = round(time.monotonic() - t0, 2)
 
@@ -131,6 +132,7 @@ def runExperiment(
             "refImageId": ref_image_id,
             "model": SD_MODEL_ID,
             "controlnet": controlnet_id,
+            "conditioningScale": config.get("conditioningScale", 0.6) if is_controlled else None,
             "seed": seed,
             "steps": 30,
             "guidanceScale": 7.5,

@@ -101,10 +101,13 @@ class Pipeline:
         steps: int = 30,
         guidance: float = 7.5,
         control: Optional[Image.Image] = None,
+        conditioningScale: float = 0.6,
     ) -> Image.Image:
         """Generate one interior design image.
 
-        Returns a PIL Image. control image is reserved for Phase 4 ControlNet.
+        Returns a PIL Image.
+        conditioningScale: ControlNet strength (0.0–1.0). 0.6 balances layout
+          adherence with aesthetic quality; 1.0 often over-constrains the output.
         Raises RuntimeError if load() has not been called.
         """
         if not self._loaded or self._sd is None:
@@ -124,6 +127,7 @@ class Pipeline:
         )
         if control is not None:
             kwargs["image"] = control
+            kwargs["controlnet_conditioning_scale"] = conditioningScale
 
         result = self._sd(positive, **kwargs)
         return result.images[0]
