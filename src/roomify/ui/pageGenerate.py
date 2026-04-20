@@ -246,27 +246,49 @@ def render() -> None:
 
         with left_a:
             st.subheader("Animation Settings")
-            anim_strategy = st.selectbox(
-                "Prompt strategy",
-                ["minimal", "descriptive", "styleAnchored"],
-                index=1,
-                key="anim_strategy",
+
+            anim_mode = st.radio(
+                "Method",
+                ["Ken Burns (instant)", "AnimateDiff (GPU, ~30 s)"],
+                horizontal=True,
+                key="anim_mode",
             )
 
-            anim_seed_mode = st.radio("Seed", ["Random", "Fixed"], horizontal=True, key="anim_seed_mode")
-            anim_seed = (
-                st.number_input("Seed value", value=42, step=1, key="anim_seed_val")
-                if anim_seed_mode == "Fixed"
-                else random.randint(0, 2**31 - 1)
-            )
-
-            with st.expander("Advanced"):
-                anim_steps = st.slider("Diffusion steps", 10, 40, 25, key="anim_steps")
-                anim_guidance = st.slider("Guidance scale", 1.0, 15.0, 7.5, step=0.5, key="anim_guidance")
-                anim_frames = st.slider("Frames", 8, 32, 16, step=4, key="anim_frames")
-                anim_fps = st.slider("FPS", 4, 16, 8, key="anim_fps")
-
-            animate_btn = st.button("Animate", type="primary", use_container_width=True, key="animate_btn")
+            if anim_mode == "Ken Burns (instant)":
+                st.caption("Pan or zoom a generated image. Pick an image from the Generate tab first, or paste a path below.")
+                kb_image_path = st.text_input(
+                    "Source image path",
+                    placeholder="/content/drive/MyDrive/roomify/outputs/.../img_0.png",
+                    key="kb_image_path",
+                )
+                kb_motion = st.selectbox(
+                    "Motion",
+                    ["zoom_in", "zoom_out", "pan_right", "pan_left", "pan_up", "pan_down"],
+                    key="kb_motion",
+                )
+                kb_frames = st.slider("Frames", 12, 48, 24, step=4, key="kb_frames")
+                kb_fps = st.slider("FPS", 8, 24, 12, key="kb_fps")
+                kb_intensity = st.slider("Intensity", 0.05, 0.4, 0.2, step=0.05, key="kb_intensity")
+                animate_btn = st.button("Animate", type="primary", use_container_width=True, key="animate_btn")
+            else:
+                anim_strategy = st.selectbox(
+                    "Prompt strategy",
+                    ["minimal", "descriptive", "styleAnchored"],
+                    index=1,
+                    key="anim_strategy",
+                )
+                anim_seed_mode = st.radio("Seed", ["Random", "Fixed"], horizontal=True, key="anim_seed_mode")
+                anim_seed = (
+                    st.number_input("Seed value", value=42, step=1, key="anim_seed_val")
+                    if anim_seed_mode == "Fixed"
+                    else random.randint(0, 2**31 - 1)
+                )
+                with st.expander("Advanced"):
+                    anim_steps = st.slider("Diffusion steps", 10, 40, 25, key="anim_steps")
+                    anim_guidance = st.slider("Guidance scale", 1.0, 15.0, 7.5, step=0.5, key="anim_guidance")
+                    anim_frames = st.slider("Frames", 8, 32, 16, step=4, key="anim_frames")
+                    anim_fps = st.slider("FPS", 4, 16, 8, key="anim_fps")
+                animate_btn = st.button("Animate", type="primary", use_container_width=True, key="animate_btn")
 
         with right_a:
             st.subheader("Output")
@@ -274,12 +296,49 @@ def render() -> None:
             if "anim_results" not in st.session_state:
                 st.session_state["anim_results"] = []
 
-            def _doAnimate(spec_d, strat, sd, n_steps, n_guidance, n_frames, fps):
+            def _doKenBurns(img_path_str, motion, n_frames, fps, intensity):
+                import json
+                from datetime import datetime, timezone
+
+                from PIL import Image as PILImage
+
+                from roomify.animateDiff import framesToGif
+                from roomify.kenBurns import applyKenBurns
+
+                img = PILImage.open(img_path_str).convert("RGB")
+                t0 = time.monotonic()
+                frames = applyKenBurns(img, frames=n_frames, motion=motion, intensity=intensity)
+                elapsed = round(time.monotonic() - t0, 2)
+
+                ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S")
+                run_id = f"{ts}_kenburns_{motion}"
+                out_dir = getOutputDir() / run_id
+                out_dir.mkdir(parents=True, exist_ok=True)
+                gif_path = out_dir / "anim.gif"
+                framesToGif(frames, gif_path, fps=fps)
+
+                run_json = {
+                    "runId": run_id,
+                    "type": "kenburns",
+                    "sourceImage": img_path_str,
+                    "motion": motion,
+                    "numFrames": n_frames,
+                    "fps": fps,
+                    "intensity": intensity,
+                    "gifPath": str(gif_path),
+                    "timings": {"generateSec": elapsed},
+                }
+                (out_dir / "run.json").write_text(json.dumps(run_json, indent=2))
+                st.session_state["anim_results"].append(run_json)
+
+            def _doAnimateDiff(spec_d, strat, sd, n_steps, n_guidance, n_frames, fps):
                 import dataclasses
                 import json
                 import subprocess
                 from datetime import datetime, timezone
 
+                from roomify.animateDiff import MOTION_ADAPTER_ID
+                from roomify.animateDiff import SD_MODEL_ID as ANIM_SD_MODEL_ID
                 from roomify.animateDiff import framesToGif
 
                 valid_fields = set(RoomSpec.__dataclass_fields__.keys())
@@ -309,41 +368,44 @@ def render() -> None:
                 except Exception:
                     git_sha = "unknown"
 
-                from roomify.animateDiff import MOTION_ADAPTER_ID, SD_MODEL_ID as ANIM_SD_MODEL_ID
-
                 run_json = {
-                    "runId": run_id,
-                    "type": "animate",
+                    "runId": run_id, "type": "animate",
                     "spec": dataclasses.asdict(room_spec),
-                    "strategy": strat,
-                    "model": ANIM_SD_MODEL_ID,
+                    "strategy": strat, "model": ANIM_SD_MODEL_ID,
                     "motionAdapter": MOTION_ADAPTER_ID,
-                    "seed": sd,
-                    "steps": n_steps,
-                    "guidanceScale": n_guidance,
-                    "numFrames": n_frames,
-                    "fps": fps,
-                    "prompt": positive,
-                    "negativePrompt": negative,
-                    "gifPath": str(gif_path),
-                    "gitSha": git_sha,
+                    "seed": sd, "steps": n_steps, "guidanceScale": n_guidance,
+                    "numFrames": n_frames, "fps": fps,
+                    "prompt": positive, "negativePrompt": negative,
+                    "gifPath": str(gif_path), "gitSha": git_sha,
                     "timings": {"generateSec": elapsed},
                 }
                 (out_dir / "run.json").write_text(json.dumps(run_json, indent=2))
                 st.session_state["anim_results"].append(run_json)
 
-            if animate_btn and spec_dict:
-                with st.spinner(f"Animating {anim_frames} frames (seed={anim_seed})..."):
-                    try:
-                        _doAnimate(
-                            spec_dict, anim_strategy, anim_seed,
-                            anim_steps, anim_guidance, anim_frames, anim_fps,
-                        )
-                    except Exception as exc:
-                        st.error(f"Animation failed: {exc}")
-
-            elif animate_btn and not spec_dict:
-                st.info("Fill in the spec form above and click **Apply spec** first.")
+            if animate_btn:
+                if anim_mode == "Ken Burns (instant)":
+                    if not kb_image_path:
+                        st.info("Paste an image path from the Generate tab above.")
+                    elif not Path(kb_image_path).exists():
+                        st.error(f"File not found: {kb_image_path}")
+                    else:
+                        with st.spinner("Applying Ken Burns effect..."):
+                            try:
+                                _doKenBurns(kb_image_path, kb_motion, kb_frames, kb_fps, kb_intensity)
+                            except Exception as exc:
+                                st.error(f"Ken Burns failed: {exc}")
+                else:
+                    if not spec_dict:
+                        st.info("Fill in the spec form above and click **Apply spec** first.")
+                    else:
+                        with st.spinner(f"Animating {anim_frames} frames (seed={anim_seed})..."):
+                            try:
+                                _doAnimateDiff(
+                                    spec_dict, anim_strategy, anim_seed,
+                                    anim_steps, anim_guidance, anim_frames, anim_fps,
+                                )
+                            except Exception as exc:
+                                st.error(f"AnimateDiff failed: {exc}")
 
             if st.session_state.get("anim_results"):
                 if st.button("Clear animations", key="clear_anim"):
@@ -357,19 +419,27 @@ def render() -> None:
                     else:
                         st.warning(f"GIF not found: {gif_path}")
 
-                    caption = (
-                        f"{result.get('strategy', '')} | "
-                        f"seed={result.get('seed', '')} | "
-                        f"{result.get('numFrames', '')} frames @ {result.get('fps', '')} fps"
-                    )
+                    if result.get("type") == "kenburns":
+                        caption = (
+                            f"{result.get('motion', '')} | "
+                            f"{result.get('numFrames', '')} frames @ {result.get('fps', '')} fps | "
+                            f"intensity={result.get('intensity', '')}"
+                        )
+                    else:
+                        caption = (
+                            f"{result.get('strategy', '')} | "
+                            f"seed={result.get('seed', '')} | "
+                            f"{result.get('numFrames', '')} frames @ {result.get('fps', '')} fps"
+                        )
                     st.caption(caption)
 
                     with st.expander("Run metadata"):
-                        spec = result.get("spec", {})
-                        st.write(f"**Spec:** {formatSpec(spec)}")
-                        st.write(f"**Prompt:** {result.get('prompt', '')}")
-                        st.write(f"**Steps:** {result.get('steps', '')} | "
-                                 f"**Guidance:** {result.get('guidanceScale', '')}")
-                        st.write(f"**Motion adapter:** {result.get('motionAdapter', '')}")
+                        if result.get("type") == "kenburns":
+                            st.write(f"**Source:** {result.get('sourceImage', '')}")
+                            st.write(f"**Motion:** {result.get('motion', '')} | **Intensity:** {result.get('intensity', '')}")
+                        else:
+                            st.write(f"**Spec:** {formatSpec(result.get('spec', {}))}")
+                            st.write(f"**Prompt:** {result.get('prompt', '')}")
+                            st.write(f"**Motion adapter:** {result.get('motionAdapter', '')}")
                         timing = result.get("timings", {}).get("generateSec", "?")
                         st.write(f"**Generate time:** {timing}s")

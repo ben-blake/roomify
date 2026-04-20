@@ -373,6 +373,37 @@ def animate(
     typer.echo(f"Done → {gif_path}")
 
 
+@app.command()
+def kenburns(
+    image: Path = typer.Option(
+        ..., "--image", help="Path to source PNG/JPG image.", exists=True,
+    ),
+    output: Path = typer.Option(
+        ..., "--output", help="Destination GIF path.",
+    ),
+    motion: str = typer.Option(
+        "zoom_in", "--motion",
+        help="zoom_in | zoom_out | pan_right | pan_left | pan_up | pan_down",
+    ),
+    frames: int = typer.Option(24, "--frames", help="Number of animation frames."),
+    fps: int = typer.Option(12, "--fps", help="GIF playback speed in frames per second."),
+    intensity: float = typer.Option(
+        0.2, "--intensity", help="Zoom/pan amount as fraction of image size (0–0.5).",
+    ),
+) -> None:
+    """Apply a Ken Burns pan/zoom effect to a static image and save as GIF."""
+    from PIL import Image as PILImage
+
+    from roomify.animateDiff import framesToGif
+    from roomify.kenBurns import applyKenBurns
+
+    img = PILImage.open(str(image)).convert("RGB")
+    frame_list = applyKenBurns(img, frames=frames, motion=motion, intensity=intensity)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    framesToGif(frame_list, output, fps=fps)
+    typer.echo(f"Saved {len(frame_list)}-frame GIF → {output}")
+
+
 def main() -> None:
     app()
 
