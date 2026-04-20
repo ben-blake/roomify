@@ -138,13 +138,13 @@ class TestLoad:
         args, kwargs = diffusers.AnimateDiffPipeline.from_pretrained.call_args
         assert args[0] == m.SD_MODEL_ID
 
-    def test_load_passes_torch_dtype_float16(self):
+    def test_load_passes_dtype_float16(self):
         import diffusers, torch
         m = _get_module()
         gen = m.AnimateDiffGenerator()
         gen.load()
         _, kwargs = diffusers.AnimateDiffPipeline.from_pretrained.call_args
-        assert kwargs.get("torch_dtype") == torch.float16
+        assert kwargs.get("dtype") == torch.float16
 
     def test_load_noop_when_already_loaded(self):
         import diffusers

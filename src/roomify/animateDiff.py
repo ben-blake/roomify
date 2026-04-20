@@ -43,11 +43,11 @@ class AnimateDiffGenerator:
         import torch  # type: ignore[import-not-found]
         from diffusers import AnimateDiffPipeline, MotionAdapter  # type: ignore[import-not-found]
 
-        adapter = MotionAdapter.from_pretrained(MOTION_ADAPTER_ID, torch_dtype=torch.float16)
+        adapter = MotionAdapter.from_pretrained(MOTION_ADAPTER_ID, dtype=torch.float16)
         pipe = AnimateDiffPipeline.from_pretrained(
             SD_MODEL_ID,
             motion_adapter=adapter,
-            torch_dtype=torch.float16,
+            dtype=torch.float16,
         )
         pipe.enable_attention_slicing()
         if torch.cuda.is_available():
