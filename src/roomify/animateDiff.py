@@ -50,6 +50,8 @@ class AnimateDiffGenerator:
             torch_dtype=torch.float16,
         )
         pipe.enable_attention_slicing()
+        if torch.cuda.is_available():
+            pipe.to("cuda")
 
         self._pipe = pipe
         self._loaded = True
