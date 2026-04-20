@@ -1,0 +1,69 @@
+# Controlled vs uncontrolled comparison sweep — Phase 7.
+#
+# Matrix: 5 specs × 3 strategies × 2 (controlled/uncontrolled) × 3 seeds = 90 images
+#
+# Each spec carries a referenceImageId (first image of that scene type in the
+# SUN RGB-D subset manifest) used for depth ControlNet conditioning.
+# Uncontrolled cells ignore referenceImageId.
+
+runId: core_comparison
+
+specs:
+  - id: bedroom_01
+    roomType: bedroom
+    size: "10x12 ft"
+    style: scandinavian
+    furniture: [queen bed, nightstand, reading chair]
+    lighting: "natural light from east window"
+    mood: "cozy, airy"
+    referenceImageId: sunrgbd_00001
+
+  - id: living_room_01
+    roomType: living_room
+    size: "14x16 ft"
+    style: mid_century
+    furniture: [sofa, armchairs, coffee table, bookshelf]
+    lighting: "floor lamp and recessed ceiling lights"
+    mood: "warm, inviting"
+    referenceImageId: sunrgbd_00041
+
+  - id: kitchen_01
+    roomType: kitchen
+    size: "10x12 ft"
+    style: industrial
+    furniture: [island, barstools, open shelving, range hood]
+    lighting: "pendant lights over island"
+    mood: "clean, functional"
+    referenceImageId: sunrgbd_00081
+
+  - id: office_01
+    roomType: office
+    size: "10x10 ft"
+    style: minimalist
+    furniture: [standing desk, ergonomic chair, monitor, bookshelf]
+    lighting: "task lamp and natural window light"
+    mood: "focused, calm"
+    referenceImageId: sunrgbd_00121
+
+  - id: bathroom_01
+    roomType: bathroom
+    size: "6x8 ft"
+    style: boho
+    furniture: [freestanding tub, vanity, woven baskets, plants]
+    lighting: "soft sconce lighting"
+    mood: "relaxing, organic"
+    referenceImageId: sunrgbd_00161
+
+strategies:
+  - minimal
+  - descriptive
+  - styleAnchored
+
+controlled:
+  - false
+  - true
+
+seeds:
+  - 42
+  - 123
+  - 7
