@@ -129,7 +129,7 @@ Estimates are rough solo-developer hours. Runtime is **Google Colab Pro** — no
 - [x] Wire `roomify animate` CLI command: `--spec`, `--strategy`, `--seed`, `--steps`, `--frames`, `--fps`; writes `anim.gif` + `run.json` (`type: animate`) per run
 - [x] `tests/testAnimateDiff.py`: 25 tests — singleton, load (MotionAdapter + AnimateDiffPipeline, fp16, attention slicing, no-op on reload), generate (RuntimeError if not loaded, returns PIL frames, passes all kwargs), framesToGif (saves GIF, raises on empty, returns path), CLI (command exists, writes GIF, writes run.json)
 - [ ] _(Colab, manual)_ Run `roomify animate` on top 3 CLIP-scored specs; commit output GIFs to `examples/phase8/`
-- [ ] _(Colab, manual)_ Surface Animate tab on the Generate page (`pageGenerate.py`)
+- [x] Surface Animate tab on the Generate page (`pageGenerate.py`): `st.tabs(["Generate Image", "Animate (GIF)"])`, shared spec form above tabs, AnimateDiff cached via `@st.cache_resource`, GIF displayed with `st.image()`, results stacked in `st.session_state["anim_results"]`
 
 **Model:** `guoyww/animatediff-motion-adapter-v1-5-2` + SD 1.5 (fp16, attention slicing)
 
