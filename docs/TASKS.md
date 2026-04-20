@@ -136,7 +136,7 @@ Document rationale, examples, and evaluation in `docs/BONUS.md`. Surface it as a
 
 - [ ] **README.md:** Open-in-Colab badge, launcher-notebook walkthrough, CLI usage, dataset description (SUN RGB-D + subset process, Drive layout), tools/libraries list, runtime notes (Colab Pro + Cloudflare tunnel), AI-tools disclosure (Claude Code used for planning + scaffolding; list any others), sample outputs with links, screenshots of the web app
 - [ ] **Sample outputs:** commit a curated `examples/` folder (≤20 small PNGs) generated on Colab
-- [ ] **PowerPoint Slides (10+):** scenario, dataset, methodology, SD pipeline, prompt design, control strategy, tools (call out Colab Pro + Streamlit + Diffusers + ControlNet + Cloudflare tunnel), results (images), demo + repo URLs, evaluation, findings, limitations, AI disclosure; note the specific GPU used
+- [ ] **PowerPoint Slides (10+):** scenario, dataset, methodology (SD pipeline, prompt design, control strategy), tools (call out Colab Pro + Streamlit + Diffusers + ControlNet + Cloudflare tunnel), results (images), demo + repo URLs, evaluation, findings & insights, limitations, AI disclosure; note the specific GPU used
 - [ ] **Demo video (90 s):** pre-warm the Colab session before recording; script: intro (20s), launcher notebook + tunnel URL (15s), web app walkthrough with a live generation (35s), results/comparisons (20s), conclusion (10s); upload (YouTube unlisted or GitHub release). Have a backup pre-recorded generation in case of tunnel hiccup.
 - [ ] **GitHub repo:** push public, verify the launcher notebook runs end-to-end in a fresh Colab session (incognito/no Drive cache) and document the first-run time budget
 
