@@ -263,4 +263,35 @@ throughout the project as new tools are used.
 
 ---
 
+### 2026-04-20 — Phase 8 Colab live testing + bug fixes
+
+**Tool:** Claude Code (claude-sonnet-4-6)
+
+**Used for:**
+- Diagnosed and fixed `MotionAdapter.from_pretrained` `TypeError`: requires `torch_dtype=torch.float16`; `AnimateDiffPipeline.from_pretrained` requires `dtype=torch.float16` — different deprecation schedules in diffusers
+- Diagnosed AnimateDiff running on CPU (~30+ min hang): added `pipe.to("cuda")` after pipeline load
+- Diagnosed flickering "watercolor" animation: switched from default PNDM to `DDIMScheduler` with `clip_sample=False, beta_schedule="linear"` for temporal coherence
+- Added Ken Burns pan/zoom as a second animation approach (`src/roomify/kenBurns.py`): `applyKenBurns()` with 6 motion types, smoothstep easing, pure CPU, instant
+- Wrote `tests/testKenBurns.py` (18 tests) TDD RED → GREEN: gradient test image helper (solid-color images produce identical frames after any crop), all 6 motion types, zero intensity, frames<2 error, CLI
+- Added `roomify kenburns` CLI command
+- Updated `src/roomify/ui/pageGenerate.py`: added Animate tab with both Ken Burns (instant) and AnimateDiff (GPU) modes, shared spec form above tabs, results stacked in `st.session_state["anim_results"]`
+- Updated `notebooks/00_launchColab.ipynb` Cell 11: rewrote from `subprocess.run(capture_output=True)` to direct Python API so AnimateDiff progress bars stream live instead of buffering for 30+ min; fixed f-string `SyntaxError` (Python 3.12 stricter parsing)
+- Fixed Cell 6 "Failed to open page": added HTTP 200 poll loop after `cloudflared` starts so the URL is only printed once it's reachable by the edge network
+- Created `docs/BONUS.md`: full writeup covering both approaches, config tables, implementation notes, test coverage, Phase 8 output tables with relative links
+- Created `configs/examples/kitchen_01.yaml` and `bathroom_01.yaml` for Phase 8 animation runs
+- Updated `docs/TASKS.md`, `CLAUDE.md`, `README.md` for Phase 8 completion
+
+**Confirmed during live Colab session (A100-SXM4-80GB):**
+- 3 Ken Burns GIFs and 3 AnimateDiff GIFs generated from top 3 CLIP-scoring Phase 7 runs
+- AnimateDiff wall time: ~10–30 s on A100 once CUDA placement bug was fixed
+- Ken Burns wall time: <0.1 s per GIF (CPU only)
+- 193/193 tests pass locally
+
+**Hand-written / not AI-generated (this session):**
+- All Colab cell execution and output verification
+- Visual inspection of generated GIFs
+- Download and commit of all 9 `examples/phase8/` files
+
+---
+
 *Append a new entry to the session log for each session that uses AI assistance.*

@@ -62,7 +62,7 @@ The app is a 3-page Streamlit interface exposed via a Cloudflare quick tunnel fr
 
 | Page | Purpose |
 |------|---------|
-| **Generate** | Spec form + strategy/seed/steps controls; Generate and Generate variant buttons; results stack side-by-side in session |
+| **Generate** | Spec form + strategy/seed/steps controls; Generate and Generate variant buttons; results stack side-by-side in session. **Animate tab** (Phase 8): Ken Burns instant pan/zoom GIFs or AnimateDiff GPU-powered looping GIFs from the same spec |
 | **Experiments** | Pick a sweep YAML, run it with a live progress bar, view metrics table + contact sheet |
 | **Gallery** | Browse all outputs; filter by scene type, strategy, or ControlNet use; click any image for full metadata |
 
@@ -88,6 +88,14 @@ python -m roomify.cli evaluate --run outputs/<runId>
 
 # Render contact sheet + markdown metrics table
 python -m roomify.cli report --run outputs/<runId>
+
+# Animate a room spec to a looping GIF via AnimateDiff (GPU, ~30 s on A100)
+python -m roomify.cli animate --spec configs/examples/kitchen_01.yaml \
+  --strategy styleAnchored --seed 123 --frames 16 --fps 8
+
+# Apply Ken Burns pan/zoom to any existing PNG (CPU, instant)
+python -m roomify.cli kenburns --image outputs/<runId>/img_0.png \
+  --output out.gif --motion zoom_in --frames 24 --fps 12
 ```
 
 ---
@@ -140,6 +148,8 @@ src/roomify/
   orchestrator.py            # sweep runner, writes run.json per image
   evaluation.py              # CLIP alignment, LPIPS diversity, consistency
   reporting.py               # contact sheets, markdown metric tables
+  animateDiff.py             # AnimateDiff GIF generation (Phase 8 bonus)
+  kenBurns.py                # Ken Burns pan/zoom effect, 6 motion types (Phase 8 bonus)
   ui/                        # Streamlit pages + reusable components
   cli.py                     # typer CLI
 notebooks/
@@ -153,7 +163,11 @@ docs/
   PRD.md                     # Product Requirements Document
   ARCHITECTURE.md            # System architecture + data contracts
   TASKS.md                   # Phased task list with exit criteria
+  BONUS.md                   # Phase 8 multimodal extension writeup
   AI_TOOLS.md                # AI tool usage disclosure (course requirement)
+examples/
+  phase7/                    # contact sheet, comparison PNGs, METRICS.md
+  phase8/                    # Ken Burns GIFs + AnimateDiff GIFs
 ```
 
 ---
@@ -169,6 +183,14 @@ Generated on Colab Pro (A100-SXM4-80GB) from the `core_comparison` sweep — 90 
 | [Strategy comparison](examples/phase7/strategy-compare/) | minimal vs descriptive vs styleAnchored |
 | [Top exports](examples/phase7/top-exports/) | Top 6 images by CLIP alignment score |
 | [Metrics summary](examples/phase7/METRICS.md) | CLIP 0.2739 mean · LPIPS 0.7583 · style consistency 0.5431 |
+
+**Phase 8 — Animation (bonus):** Ken Burns and AnimateDiff GIFs from the top 3 CLIP-scoring runs.
+
+| | |
+|---|---|
+| [Ken Burns GIFs](examples/phase8/) | Smooth zoom/pan applied to top-scoring static outputs (CPU, instant) |
+| [AnimateDiff GIFs](examples/phase8/) | Diffusion-based looping animation via `guoyww/animatediff-motion-adapter-v1-5-2` |
+| [Bonus writeup](docs/BONUS.md) | Design decisions, implementation notes, test coverage |
 
 ---
 
