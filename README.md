@@ -17,16 +17,25 @@ Three prompt strategies — `minimal`, `descriptive`, `styleAnchored` — are co
 ## Quick start (Google Colab — recommended)
 
 1. Click the **Open in Colab** badge above.
-2. Run all cells in `notebooks/00_launchColab.ipynb` top to bottom.
-   - Enable widget cell enables third-party widget support.
-   - Cell 1 mounts your Google Drive and creates the folder structure.
-   - Cell 2 clones this repo and installs dependencies (~3 min on first run).
-   - Cell 2b **(first run only)** unzips SUN RGB-D and builds the 200-sample subset.
-   - Cell 3 sets `HF_HOME` so model weights persist across Colab sessions.
-   - Cell 4 verifies your GPU with `nvidia-smi`.
-   - Cell 5 loads SD 1.5 and runs a smoke-test generation (skips if already done).
-   - Cell 6 starts the Streamlit web app and opens a Cloudflare tunnel.
-   - Cell 7 is a reconnect helper for after a Colab disconnect.
+2. Run cells in `notebooks/00_launchColab.ipynb` — see the table below for which cells to run and when.
+
+   | Cell | Purpose | When to run |
+   |------|---------|-------------|
+   | Enable widgets | Third-party widget support | Every session |
+   | 1 | Mount Google Drive, create folder layout | Every session |
+   | 2 | Clone repo + install dependencies | First run per Drive account |
+   | 2b | Unzip SUN RGB-D + build 200-sample subset + manifest | **Once only** |
+   | 3 | Set `HF_HOME` to Drive-backed cache | Every session |
+   | 4 | Verify GPU with `nvidia-smi` — **read output now** | Every session |
+   | 5 | Load SD 1.5 + smoke-test (skips if already done) | Every session |
+   | 6 | Start Streamlit + Cloudflare tunnel — **click the URL** | Every session |
+   | 7 | Reconnect helper — remount Drive + restart tunnel | After a disconnect only |
+   | 8 | Core experiment sweep — 45 images (~15–30 min on T4) | Once (outputs persist on Drive) |
+   | 8b | Controlled vs uncontrolled comparison sweep — 90 images | Once (outputs persist on Drive) |
+   | 9 | Controlled vs uncontrolled pair — single spec verification | Once |
+   | 10 | VRAM headroom check | After any generation cell |
+   | 11 | AnimateDiff + Ken Burns animations (multimodal bonus) | Once |
+
 3. Click the `trycloudflare.com` URL printed by Cell 6 to open the web app.
 
 **First-run time budget:** ~5–8 min (model download + warmup). Subsequent sessions re-use the Drive-cached weights and start in < 1 min.
@@ -67,6 +76,8 @@ The app is a 3-page Streamlit interface exposed via a Cloudflare quick tunnel fr
 | **Gallery** | Browse all outputs; filter by scene type, strategy, or ControlNet use; click any image for full metadata |
 
 The pipeline is cached with `@st.cache_resource` and pre-warmed on startup so the first generation from the form is fast.
+
+![Streamlit web app](docs/screenshots/streamlit.png)
 
 ---
 
@@ -127,7 +138,7 @@ The subset is cached to Google Drive. Subsequent Colab sessions load directly fr
 
 ## Runtime notes
 
-- **Platform:** Google Colab Pro (T4 / L4 / A100 depending on availability)
+- **Platform:** Google Colab Pro (Runtime: 2026.01; T4 / L4 / A100 depending on availability)
 - **Confirmed VRAM (A100-SXM4-80GB):** 5364/81920 MiB used (6.5%) for SD 1.5 + ControlNet with fp16 + attention slicing. No CPU offload needed on A100; T4 (15360 MiB) is sufficient with attention slicing enabled.
 - **Public URL:** Cloudflare quick tunnel (`trycloudflare.com`) — no auth, no signup. URL changes every Colab session.
 - **Persistence:** All generated outputs and HF model weights live under `/content/drive/MyDrive/roomify/` and survive Colab disconnects.
@@ -165,6 +176,8 @@ docs/
   TASKS.md                   # Phased task list with exit criteria
   BONUS.md                   # Phase 8 multimodal extension writeup
   AI_TOOLS.md                # AI tool usage disclosure (course requirement)
+scripts/
+  buildSubset.py             # curate 200-sample SUN RGB-D subset
 examples/
   phase7/                    # contact sheet, comparison PNGs, METRICS.md
   phase8/                    # Ken Burns GIFs + AnimateDiff GIFs
@@ -194,9 +207,38 @@ Generated on Colab Pro (A100-SXM4-80GB) from the `core_comparison` sweep — 90 
 
 ---
 
+## Demo video
+
+[Watch on Vimeo](https://vimeo.com/1185003666)
+
+---
+
+## Tools & libraries
+
+| Category | Library / Tool | Purpose |
+|----------|---------------|---------|
+| **Generation** | [Stable Diffusion 1.5](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5) | Text-to-image base model |
+| **Generation** | [ControlNet](https://huggingface.co/lllyasviel) (depth + Canny) | Spatial conditioning from SUN RGB-D depth maps |
+| **Generation** | [AnimateDiff](https://huggingface.co/guoyww/animatediff-motion-adapter-v1-5-2) | Text-to-GIF animation via temporal attention |
+| **ML framework** | PyTorch (fp16, attention slicing) | Model inference runtime |
+| **ML framework** | HuggingFace Diffusers + Transformers | Pipeline and model loading |
+| **Evaluation** | open_clip_torch (CLIP ViT-B-32) | Text-image alignment metric |
+| **Evaluation** | lpips | Perceptual diversity metric |
+| **Signal processing** | OpenCV, controlnet-aux | Canny edge + depth map extraction |
+| **Web app** | Streamlit | Interactive multi-page UI |
+| **Runtime** | Google Colab Pro (T4 / L4 / A100) | GPU compute |
+| **Tunnel** | Cloudflare quick tunnel (`cloudflared`) | Public URL for Colab-hosted Streamlit |
+| **CLI** | typer | Command-line interface |
+| **Testing** | pytest | 193 tests, pure-Python modules |
+| **Data** | SUN RGB-D (Princeton) | Indoor RGB-D reference images for ControlNet |
+
+---
+
 ## AI tools disclosure
 
-This project uses AI tools. See [docs/AI_TOOLS.md](docs/AI_TOOLS.md) for the full disclosure required by course policy.
+This project uses AI tools. See [docs/AI_TOOLS.md](docs/AI_TOOLS.md) for the full session log required by course policy.
+
+**Summary:** Claude Code (claude-sonnet-4-6) was used for planning (PRD, architecture, task list), scaffolding all module stubs and tests, and debugging Colab runtime issues. All Colab execution, visual inspection of outputs, and final curation were done by hand.
 
 ---
 
