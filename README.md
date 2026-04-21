@@ -4,6 +4,8 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ben-blake/roomify/blob/main/notebooks/00_launchColab.ipynb)
 
+**Demo:** [Watch on Vimeo](https://vimeo.com/1185003666)
+
 ---
 
 ## What it does
@@ -204,12 +206,6 @@ Generated on Colab Pro (A100-SXM4-80GB) from the `core_comparison` sweep — 90 
 | [Ken Burns GIFs](examples/phase8/) | Smooth zoom/pan applied to top-scoring static outputs (CPU, instant) |
 | [AnimateDiff GIFs](examples/phase8/) | Diffusion-based looping animation via `guoyww/animatediff-motion-adapter-v1-5-2` |
 | [Bonus writeup](docs/BONUS.md) | Design decisions, implementation notes, test coverage |
-
----
-
-## Demo video
-
-[Watch on Vimeo](https://vimeo.com/1185003666)
 
 ---
 
