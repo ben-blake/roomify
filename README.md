@@ -197,7 +197,7 @@ Generated on Colab Pro (A100-SXM4-80GB) from the `core_comparison` sweep — 90 
 | [Top exports](examples/phase7/top-exports/) | Top 6 images by CLIP alignment score |
 | [Metrics summary](examples/phase7/METRICS.md) | CLIP 0.2739 mean · LPIPS 0.7583 · style consistency 0.5431 |
 
-**Phase 8 — Animation (bonus):** Ken Burns and AnimateDiff GIFs from the top 3 CLIP-scoring runs.
+**Multimodal Bonus — Animation:** Ken Burns and AnimateDiff GIFs from the top 3 CLIP-scoring runs.
 
 | | |
 |---|---|
